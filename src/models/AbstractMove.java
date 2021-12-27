@@ -1,21 +1,47 @@
 package models;
 
 import models.TipoPokemon.Tipo;
+import utils.CondArena;
+import utils.CondPosiPkmn;
 import utils.Estado;
 
 public abstract class AbstractMove {
 	private Estado aplicaEstado;
+	private CondArena aplicaCondArena;
+	private CondPosiPkmn aplicaCondPosiPkmn;
 	private Tipo tipo;
 	private String nombre;
 	private int maxPP, actPP, damage, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou,
 			chnSpDefRiv, chnSpeYou, chnSpeRiv;
 
 	// Const
-	protected AbstractMove(Estado aplicaEstado, Tipo tipo, String nombre, int maxPP, int actPP, int damage,
-			int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv,
-			int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
+	/**
+	 * Constructor del objeto 'AbstractMove'
+	 * 
+	 * @param aplicaEstado Estado que aplica
+	 * @param tipo
+	 * @param nombre
+	 * @param maxPP
+	 * @param actPP
+	 * @param damage
+	 * @param chnAtkYou
+	 * @param chnAtkRiv
+	 * @param chnDefYou
+	 * @param chnDefRiv
+	 * @param chnSpAtkYou
+	 * @param chnSpAtkRiv
+	 * @param chnSpDefYou
+	 * @param chnSpDefRiv
+	 * @param chnSpeYou
+	 * @param chnSpeRiv
+	 */
+	protected AbstractMove(Estado aplicaEstado, CondArena aplicaCondArena, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
+			String nombre, int maxPP, int actPP, int damage, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv,
+			int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
 		super();
 		this.aplicaEstado = aplicaEstado;
+		this.aplicaCondArena = aplicaCondArena;
+		this.aplicaCondPosiPkmn = aplicaCondPosiPkmn;
 		this.tipo = tipo;
 		this.nombre = nombre;
 		this.maxPP = maxPP;
