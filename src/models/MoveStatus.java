@@ -44,10 +44,11 @@ public class MoveStatus extends AbstractMove {
 	 *                           velocidad del rival (0, 1, 2, 3)
 	 */
 	public MoveStatus(Estado aplicaEstado, CondArena aplicaCondArena, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
-			String nombre, int maxPP, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou,
-			int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
-		super(aplicaEstado, aplicaCondArena, aplicaCondPosiPkmn, tipo, nombre, maxPP, 0, chnAtkYou, chnAtkRiv,
-				chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv, chnSpeYou, chnSpeRiv);
+			String nombre, String descripcion, int maxPP, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv,
+			int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
+		super(aplicaEstado, aplicaCondArena, aplicaCondPosiPkmn, tipo, nombre, descripcion, maxPP, 0, chnAtkYou,
+				chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv, chnSpeYou,
+				chnSpeRiv);
 	}
 
 }

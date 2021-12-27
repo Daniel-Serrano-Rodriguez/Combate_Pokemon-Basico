@@ -10,7 +10,7 @@ public abstract class AbstractMove {
 	private CondArena aplicaCondArena;
 	private CondPosiPkmn aplicaCondPosiPkmn;
 	private Tipo tipo;
-	private String nombre;
+	private String nombre, descripcion;
 	private int maxPP, actPP, damage, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou,
 			chnSpDefRiv, chnSpeYou, chnSpeRiv;
 
@@ -26,6 +26,7 @@ public abstract class AbstractMove {
 	 * @param tipo               Enum 'TipoPokemon.Tipo' que representa el tipo del
 	 *                           movimiento
 	 * @param nombre             String que representa el nombre del movimiento
+	 * @param descripcion        String que representa la descripcion del movimiento
 	 * @param maxPP              Entero que representa los max PP del movimiento
 	 * @param actPP              Entero que representa los PP actuales del
 	 *                           movimiento
@@ -53,14 +54,16 @@ public abstract class AbstractMove {
 	 *                           velocidad del rival (0, 1, 2, 3)
 	 */
 	protected AbstractMove(Estado aplicaEstado, CondArena aplicaCondArena, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
-			String nombre, int maxPP, int damage, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv,
-			int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
+			String nombre, String descripcion, int maxPP, int damage, int chnAtkYou, int chnAtkRiv, int chnDefYou,
+			int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou,
+			int chnSpeRiv) {
 		super();
 		this.aplicaEstado = aplicaEstado;
 		this.aplicaCondArena = aplicaCondArena;
 		this.aplicaCondPosiPkmn = aplicaCondPosiPkmn;
 		this.tipo = tipo;
 		this.nombre = nombre;
+		this.descripcion = descripcion;
 		this.maxPP = maxPP;
 		this.actPP = maxPP;
 		this.damage = damage;
@@ -93,11 +96,19 @@ public abstract class AbstractMove {
 		return tipo;
 	}
 
-	protected String getNombre() {
+	public String getNombre() {
 		return nombre;
 	}
 
-	protected int getMaxPP() {
+	public String getDescricpion() {
+		return descripcion;
+	}
+
+	public void setDescricpion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public int getMaxPP() {
 		return maxPP;
 	}
 
@@ -113,7 +124,7 @@ public abstract class AbstractMove {
 		this.actPP = actPP;
 	}
 
-	protected int getDamage() {
+	public int getDamage() {
 		return damage;
 	}
 

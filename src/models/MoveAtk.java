@@ -39,11 +39,12 @@ public class MoveAtk extends AbstractMove {
 	 * @param chnSpeRiv    Entero que representa cuantos niveles cambia a la
 	 *                     velocidad del rival (0, 1, 2, 3)
 	 */
-	public MoveAtk(Estado aplicaEstado, Tipo tipo, String nombre, int maxPP, int damage, int chnAtkYou,
-			int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou,
-			int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
-		super(aplicaEstado, CondArena.Ninguno, CondPosiPkmn.Ninguno, tipo, nombre, maxPP, damage, chnAtkYou, chnAtkRiv,
-				chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv, chnSpeYou, chnSpeRiv);
+	public MoveAtk(Estado aplicaEstado, Tipo tipo, String nombre, String descripcion, int maxPP, int damage,
+			int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv,
+			int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
+		super(aplicaEstado, CondArena.Ninguno, CondPosiPkmn.Ninguno, tipo, nombre, descripcion, maxPP, damage,
+				chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv,
+				chnSpeYou, chnSpeRiv);
 	}
 
 }
