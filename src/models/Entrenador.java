@@ -13,14 +13,28 @@ public class Entrenador {
 		this.nombre = nombre;
 		this.equipo = new Equipo();
 	}
-	
+
+	/**
+	 * Constructor del objeto 'Entrenador'. Se crea con un nombre y un equipo vacio
+	 * 
+	 * @param nombre String que representa el nombre del Entrenador
+	 */
+	protected Entrenador() {
+		this.nombre = "";
+		this.equipo = new Equipo();
+	}
+
 	// Getters - Setters
-	public String getNombre() {
+	protected String getNombre() {
 		return this.nombre;
 	}
-	
+
+	protected void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
 	// Methods
-	public void meterPkmnEquipo(Pokemon pokemon) {
+	protected void meterPkmnEquipo(Pokemon pokemon) {
 		this.equipo.meterPokemon(pokemon);
 	}
 }
