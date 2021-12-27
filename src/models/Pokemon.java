@@ -206,7 +206,7 @@ public class Pokemon {
 
 			do {
 				mostrarMovimientos();
-				System.out.print("->: ");
+				System.out.print("\n->: ");
 				move = Integer.parseInt(sc.next());
 
 				if (move > this.movimientos.size() || move < 1) {
