@@ -53,7 +53,7 @@ public abstract class AbstractMove {
 	 *                           velocidad del rival (0, 1, 2, 3)
 	 */
 	protected AbstractMove(Estado aplicaEstado, CondArena aplicaCondArena, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
-			String nombre, int maxPP, int actPP, int damage, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv,
+			String nombre, int maxPP, int damage, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv,
 			int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
 		super();
 		this.aplicaEstado = aplicaEstado;
@@ -62,7 +62,7 @@ public abstract class AbstractMove {
 		this.tipo = tipo;
 		this.nombre = nombre;
 		this.maxPP = maxPP;
-		this.actPP = actPP;
+		this.actPP = maxPP;
 		this.damage = damage;
 		this.chnAtkYou = chnAtkYou;
 		this.chnAtkRiv = chnAtkRiv;
@@ -79,6 +79,14 @@ public abstract class AbstractMove {
 	// Getters - Setters
 	protected Estado getAplicaEstado() {
 		return aplicaEstado;
+	}
+
+	protected CondArena getAplicaCondArena() {
+		return aplicaCondArena;
+	}
+
+	protected CondPosiPkmn getAplicaCondPosiPkmn() {
+		return aplicaCondPosiPkmn;
 	}
 
 	protected Tipo getTipo() {
