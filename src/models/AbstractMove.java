@@ -11,85 +11,102 @@ public abstract class AbstractMove {
 			chnSpDefRiv, chnSpeYou, chnSpeRiv;
 
 	// Const
-	protected AbstractMove(Estado aplicaEstado, Tipo tipo, String nombre, int maxPP, int actPP) {
+	protected AbstractMove(Estado aplicaEstado, Tipo tipo, String nombre, int maxPP, int actPP, int damage,
+			int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv,
+			int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
 		super();
 		this.aplicaEstado = aplicaEstado;
 		this.tipo = tipo;
 		this.nombre = nombre;
 		this.maxPP = maxPP;
 		this.actPP = actPP;
+		this.damage = damage;
+		this.chnAtkYou = chnAtkYou;
+		this.chnAtkRiv = chnAtkRiv;
+		this.chnDefYou = chnDefYou;
+		this.chnDefRiv = chnDefRiv;
+		this.chnSpAtkYou = chnSpAtkYou;
+		this.chnSpAtkRiv = chnSpAtkRiv;
+		this.chnSpDefYou = chnSpDefYou;
+		this.chnSpDefRiv = chnSpDefRiv;
+		this.chnSpeYou = chnSpeYou;
+		this.chnSpeRiv = chnSpeRiv;
 	}
 
 	// Getters - Setters
-	public Estado getAplicaEstado() {
+	protected Estado getAplicaEstado() {
 		return aplicaEstado;
 	}
 
-	public Tipo getTipo() {
+	protected Tipo getTipo() {
 		return tipo;
 	}
 
-	public String getNombre() {
+	protected String getNombre() {
 		return nombre;
 	}
 
-	public int getMaxPP() {
+	protected int getMaxPP() {
 		return maxPP;
 	}
 
-	public void setMaxPP(int maxPP) {
+	protected void setMaxPP(int maxPP) {
 		this.maxPP = maxPP;
 	}
 
-	public int getActPP() {
+	protected int getActPP() {
 		return actPP;
 	}
 
-	public void setActPP(int actPP) {
+	protected void setActPP(int actPP) {
 		this.actPP = actPP;
 	}
 
-	public int getDamage() {
+	protected int getDamage() {
 		return damage;
 	}
 
-	public int getChnAtkYou() {
+	protected void setDamage(int damage) {
+		this.damage = damage;
+	}
+
+	protected int getChnAtkYou() {
 		return chnAtkYou;
 	}
 
-	public int getChnAtkRiv() {
+	protected int getChnAtkRiv() {
 		return chnAtkRiv;
 	}
 
-	public int getChnDefYou() {
+	protected int getChnDefYou() {
 		return chnDefYou;
 	}
 
-	public int getChnDefRiv() {
+	protected int getChnDefRiv() {
 		return chnDefRiv;
 	}
 
-	public int getChnSpAtkYou() {
+	protected int getChnSpAtkYou() {
 		return chnSpAtkYou;
 	}
 
-	public int getChnSpAtkRiv() {
+	protected int getChnSpAtkRiv() {
 		return chnSpAtkRiv;
 	}
 
-	public int getChnSpDefYou() {
+	protected int getChnSpDefYou() {
 		return chnSpDefYou;
 	}
 
-	public int getChnSpDefRiv() {
+	protected int getChnSpDefRiv() {
 		return chnSpDefRiv;
 	}
 
-	public int getChnSpeYou() {
+	protected int getChnSpeYou() {
 		return chnSpeYou;
 	}
 
-	public int getChnSpeRiv() {
+	protected int getChnSpeRiv() {
 		return chnSpeRiv;
 	}
 
