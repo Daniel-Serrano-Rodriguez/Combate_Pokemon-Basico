@@ -19,6 +19,9 @@ public class MoveStatus extends AbstractMove {
 	 * @param tipo               Enum 'TipoPokemon.Tipo' que representa el tipo del
 	 *                           movimiento
 	 * @param nombre             String que representa el nombre del movimiento
+	 * @param descripcion        String que representa la descripcion del
+	 *                           movimiento, QUE SEA PEQUEÑA (E.g. Hace 20 puntos de
+	 *                           frio)
 	 * @param maxPP              Entero que representa los max PP del movimiento
 	 * @param actPP              Entero que representa los PP actuales del
 	 *                           movimiento
