@@ -66,7 +66,7 @@ public class Equipo {
 				do {
 					mostrarEquipo();
 					System.out.print("\n->: ");
-					poke = Integer.parseInt(sc.next());
+					poke = Integer.parseInt(sc.nextLine());
 
 					if (poke > this.equipo.size() || poke < 1) {
 						elegido = false;
@@ -75,7 +75,7 @@ public class Equipo {
 						System.out.println("\n\n¿Quitar " + this.equipo.get(poke).getNombre() + "?");
 						System.out.println("\n1.Si\n2.No\n");
 						System.out.print("->: ");
-						opc = Integer.parseInt(sc.next());
+						opc = Integer.parseInt(sc.nextLine());
 
 						if (opc < 1 || opc > 2) {
 							elegido = false;

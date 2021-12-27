@@ -182,7 +182,7 @@ public class Pokemon {
 		do {
 			mostrarMovimientos();
 			System.out.print("->: ");
-			move = Integer.parseInt(sc.next());
+			move = Integer.parseInt(sc.nextLine());
 
 			if (move > this.movimientos.size() || move < 1) {
 				elegido = false;
@@ -216,7 +216,7 @@ public class Pokemon {
 					System.out.println("\n\n¿Olvidar " + this.movimientos.get(move).getNombre() + "?");
 					System.out.println("\n1.Si\n2.No\n");
 					System.out.print("->: ");
-					opc = Integer.parseInt(sc.next());
+					opc = Integer.parseInt(sc.nextLine());
 
 					if (opc < 1 || opc > 2) {
 						elegido = false;
