@@ -12,7 +12,8 @@ public class Pokemon implements Cloneable {
 	private ArrayList<AbstractMove> movimientos;
 	private Entrenador entrenador;
 	private String nombre;
-	private int maxHP, actualHp, numero, level, attack, defence, spAttack, spDefence, speed, idPelea;
+	private int maxHP, actualHp, numero, level, attack, defence, spAttack, spDefence, speed, idPelea, turnosEstado,
+			cntChngAtk, cntChngSpAtk, cntChngDef, cntChngSpDef, cntChngSpe;
 	/**
 	 * posicion indica la posicón que ocupa el pokemon en el combate, 0 para 1vs1,
 	 * 0-1 para 2vs2 y de 0 a 2 para 3vs3
@@ -62,6 +63,7 @@ public class Pokemon implements Cloneable {
 		this.posicion = -1;
 		this.ataca = -1;
 		this.idPelea = -1;
+		this.turnosEstado = 0;
 	}
 
 	private Pokemon() {
@@ -199,6 +201,54 @@ public class Pokemon implements Cloneable {
 
 	public void setIdPelea(int idPelea) {
 		this.idPelea = idPelea;
+	}
+
+	public int getTurnosEstado() {
+		return turnosEstado;
+	}
+
+	public void setTurnosEstado(int turnosEstado) {
+		this.turnosEstado = turnosEstado;
+	}
+
+	protected int getCntChngAtk() {
+		return cntChngAtk;
+	}
+
+	protected void setCntChngAtk(int cntChngAtk) {
+		this.cntChngAtk = cntChngAtk;
+	}
+
+	protected int getCntChngSpAtk() {
+		return cntChngSpAtk;
+	}
+
+	protected void setCntChngSpAtk(int cntChngSpAtk) {
+		this.cntChngSpAtk = cntChngSpAtk;
+	}
+
+	protected int getCntChngDef() {
+		return cntChngDef;
+	}
+
+	protected void setCntChngDef(int cntChngDef) {
+		this.cntChngDef = cntChngDef;
+	}
+
+	protected int getCntChngSpDef() {
+		return cntChngSpDef;
+	}
+
+	protected void setCntChngSpDef(int cntChngSpDef) {
+		this.cntChngSpDef = cntChngSpDef;
+	}
+
+	protected int getCntChngSpe() {
+		return cntChngSpe;
+	}
+
+	protected void setCntChngSpe(int cntChngSpe) {
+		this.cntChngSpe = cntChngSpe;
 	}
 
 	// Methods

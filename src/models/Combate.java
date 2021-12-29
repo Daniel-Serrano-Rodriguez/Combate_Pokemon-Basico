@@ -9,7 +9,6 @@ import models.TipoPokemon.Tipo;
 import utils.CondArena;
 import utils.CondPosiPkmn;
 import utils.Estado;
-import utils.Moves;
 
 public class Combate {
 	private Entrenador entrenador1, entrenador2;
@@ -183,40 +182,72 @@ public class Combate {
 
 	private void aplicarMovimiento(ArrayList<Pokemon> equipo, Pokemon atacante, AbstractMove movimiento,
 			Pokemon rival) {
-		int damage;
+		int damage = 0;
 
 		if (atacante.getActualHp() > 0) {
 			// TODO aplicar formulas de daño
 			if (movimiento.getActPP() > 0) {
-				strangeMove(equipo, atacante, rival, movimiento);
-				damage = calcDamage(atacante, rival, movimiento);
-
-				atacante.setAttack(atacante.getAttack() * movimiento.getChnAtkYou());
-				atacante.setSpAttack(atacante.getSpAttack() * movimiento.getChnSpAtkYou());
-				atacante.setDefence(atacante.getDefence() * movimiento.getChnDefYou());
-				atacante.setSpDefence(atacante.getSpDefence() * movimiento.getChnSpDefYou());
-				atacante.setSpeed(atacante.getSpeed() * movimiento.getChnSpeYou());
-
-				rival.setActualHp(rival.getActualHp() - damage);
-				rival.setAttack(rival.getAttack() * movimiento.getChnAtkRiv());
-				rival.setSpAttack(rival.getSpAttack() * movimiento.getChnSpAtkRiv());
-				rival.setDefence(rival.getDefence() * movimiento.getChnDefRiv());
-				rival.setSpDefence(rival.getSpDefence() * movimiento.getChnSpDefRiv());
-				rival.setSpeed(rival.getSpeed() * movimiento.getChnSpeRiv());
-
-				recoilMove(atacante, movimiento, damage);
-				resetStrangeMove(movimiento);
-
-				movimiento.setActPP(movimiento.getActPP() - 1);
+				if (movimiento.getPrecision() > 0) {
+					if (atacante.getEstado() == Estado.Paralisis) {
+						if ((int) (Math.random() * 101) > 25)
+							ataque(equipo, atacante, movimiento, rival, damage);
+					} else if (atacante.getEstado() == Estado.Retroceder) {
+						
+					}
+				} else {
+					if ((int) (Math.random() * 101) < movimiento.getPrecision()) {
+						if ((int) (Math.random() * 101) > 25)
+							ataque(equipo, atacante, movimiento, rival, damage);
+					}
+				}
 			} else {
-				damage = calcDamage(atacante, rival, movimiento);
+				if ((int) (Math.random() * 101) > 25) {
+					damage = calcDamage(atacante, rival, movimiento);
 
-				rival.setActualHp(rival.getActualHp() - damage);
+					rival.setActualHp(rival.getActualHp() - damage);
 
-				atacante.setActualHp((int) (atacante.getMaxHP() / 4));
+					atacante.setActualHp((int) (atacante.getMaxHP() / 4));
+				}
+			}
+			if (rival.getActualHp() > 0 && atacante.getEstado() == Estado.Quemado
+					&& (atacante.getTipo1() == Tipo.Fuego || atacante.getTipo2() == Tipo.Fuego)) {
+				atacante.setActualHp(atacante.getActualHp() - ((int) (atacante.getMaxHP() / 16)));
 			}
 		}
+		if (atacante.getTurnosEstado() > 0) {
+			atacante.setTurnosEstado(atacante.getTurnosEstado() - 1);
+		} else if(atacante.getTurnosEstado() == 0) {
+			atacante.setEstado(Estado.Ninguno);
+		}
+	}
 
+	public void ataque(ArrayList<Pokemon> equipo, Pokemon atacante, AbstractMove movimiento, Pokemon rival,
+			int damage) {
+		AbstractMove move = strangeMove(equipo, movimiento);
+		AbstractMove apoyo = (AbstractMove) movimiento.copiarMove();
+		movimiento = (AbstractMove) move.copiarMove();
+		statusAttack(atacante, rival, movimiento);
+
+		damage = calcDamage(atacante, rival, movimiento);
+
+		atacante.setAttack(atacante.getAttack() * movimiento.getChnAtkYou());
+		atacante.setSpAttack(atacante.getSpAttack() * movimiento.getChnSpAtkYou());
+		atacante.setDefence(atacante.getDefence() * movimiento.getChnDefYou());
+		atacante.setSpDefence(atacante.getSpDefence() * movimiento.getChnSpDefYou());
+		atacante.setSpeed(atacante.getSpeed() * movimiento.getChnSpeYou());
+
+		rival.setActualHp(rival.getActualHp() - damage);
+		rival.setAttack(rival.getAttack() * movimiento.getChnAtkRiv());
+		rival.setSpAttack(rival.getSpAttack() * movimiento.getChnSpAtkRiv());
+		rival.setDefence(rival.getDefence() * movimiento.getChnDefRiv());
+		rival.setSpDefence(rival.getSpDefence() * movimiento.getChnSpDefRiv());
+		rival.setSpeed(rival.getSpeed() * movimiento.getChnSpeRiv());
+
+		recoilMove(atacante, movimiento, damage);
+
+		movimiento = (AbstractMove) apoyo.copiarMove();
+
+		movimiento.setActPP(movimiento.getActPP() - 1);
 	}
 
 //	private void comprobarMove(AbstractMove movimiento) {
@@ -310,15 +341,58 @@ public class Combate {
 				quemadura = 0.5;
 			}
 
-			return (int) (((((((2 * atacante.getLevel()) / 5) + 2) * movimiento.getDamage()
-					* (atacante.getAttack() / rival.getDefence())) / 50) + 2) * 1 * modTiempo * crit * random * stab
-					* efectividad * quemadura * otro);
+			if (movimiento.getClase() == Clase.Fisico) {
+				return (int) (((((((2 * atacante.getLevel()) / 5) + 2) * movimiento.getDamage()
+						* (atacante.getAttack() / rival.getDefence())) / 50) + 2) * 1 * modTiempo * crit * random * stab
+						* efectividad * quemadura * otro);
+			} else {
+				return (int) (((((((2 * atacante.getLevel()) / 5) + 2) * movimiento.getDamage()
+						* (atacante.getSpAttack() / rival.getSpDefence())) / 50) + 2) * 1 * modTiempo * crit * random
+						* stab * efectividad * quemadura * otro);
+			}
 		}
 
 		}
 	}
 
-	private void strangeMove(ArrayList<Pokemon> equipo, Pokemon atacante, Pokemon rival, AbstractMove movimiento) {
+	private void statusAttack(Pokemon atacante, Pokemon rival, AbstractMove movimiento) {
+		if (rival.getTurnosEstado() > 0) {
+			switch (movimiento.getMove()) {
+			case Relic_Song:
+				if (((int) (Math.random() * 101)) <= 10) {
+					rival.setEstado(Estado.Dormido);
+					rival.setTurnosEstado((int) (Math.random() * 3) + 1);
+				}
+				break;
+
+			case Snore:
+				if (((int) (Math.random() * 101)) <= 30) {
+					rival.setEstado(Estado.Retroceder);
+					rival.setTurnosEstado(1);
+				}
+				break;
+
+			case Bolt_Strike:
+				if (((int) (Math.random() * 101)) <= 20) {
+					rival.setEstado(Estado.Paralisis);
+					rival.setTurnosEstado(1);
+				}
+				break;
+
+			case Spark:
+				if (((int) (Math.random() * 101)) <= 30) {
+					rival.setEstado(Estado.Paralisis);
+					rival.setTurnosEstado(1);
+				}
+				break;
+
+			default:
+			}
+		}
+
+	}
+
+	private AbstractMove strangeMove(ArrayList<Pokemon> equipo, AbstractMove movimiento) {
 		switch (movimiento.getMove()) {
 		case Assist:
 			ArrayList<AbstractMove> movimientos_equipo = new ArrayList<AbstractMove>();
@@ -327,57 +401,34 @@ public class Combate {
 					movimientos_equipo.add(move);
 				}
 			}
-			changeMove(movimiento, movimientos_equipo.get((int) (Math.random() * movimientos_equipo.size())));
-			break;
+			return changeMove(movimientos_equipo.get((int) (Math.random() * movimientos_equipo.size())));
 
 		case Metronome:
-			changeMove(movimiento, utils.Almacen.almacenMovimientos
+			return changeMove(utils.Almacen.almacenMovimientos
 					.get((int) (Math.random() * utils.Almacen.almacenMovimientos.size())));
-			break;
 
 		default:
+			return movimiento;
 		}
 	}
 
-	private void resetStrangeMove(AbstractMove movimiento) {
-		int posicion = -1;
-		switch (movimiento.getMove()) {
-		case Assist:
-			for (int i = 0; i < utils.Almacen.almacenMovimientos.size(); i++) {
-				if (utils.Almacen.almacenMovimientos.get(i).getMove() == Moves.Assist) {
-					posicion = i;
-				}
-			}
-			changeMove(movimiento, utils.Almacen.almacenMovimientos.get(posicion));
-			break;
-
-		case Metronome:
-			for (int i = 0; i < utils.Almacen.almacenMovimientos.size(); i++) {
-				if (utils.Almacen.almacenMovimientos.get(i).getMove() == Moves.Metronome) {
-					posicion = i;
-				}
-			}
-			changeMove(movimiento, utils.Almacen.almacenMovimientos.get(posicion));
-			break;
-
-		default:
+	private AbstractMove changeMove(AbstractMove objetivo) {
+		if (objetivo instanceof MoveAtk) {
+			return new MoveAtk(objetivo.getAplicaEstado(), objetivo.getTipo(), objetivo.getClase(), objetivo.getMove(),
+					objetivo.getNombre(), objetivo.getDescripcion(), objetivo.getMaxPP(), objetivo.getDamage(),
+					objetivo.getPrecision(), objetivo.getChnAtkYou(), objetivo.getChnAtkRiv(),
+					objetivo.getChnSpAtkYou(), objetivo.getChnSpAtkRiv(), objetivo.getChnDefYou(),
+					objetivo.getChnDefRiv(), objetivo.getChnSpDefYou(), objetivo.getChnSpDefRiv(),
+					objetivo.getChnSpeYou(), objetivo.getChnSpeRiv());
+		} else {
+			return new MoveStatus(objetivo.getAplicaEstado(), objetivo.getAplicaCondArena(),
+					objetivo.getAplicaCondPosiPkmn(), objetivo.getTipo(), objetivo.getClase(), objetivo.getMove(),
+					objetivo.getNombre(), objetivo.getDescripcion(), objetivo.getMaxPP(), objetivo.getPrecision(),
+					objetivo.getChnAtkYou(), objetivo.getChnAtkRiv(), objetivo.getChnSpAtkYou(),
+					objetivo.getChnSpAtkRiv(), objetivo.getChnDefYou(), objetivo.getChnDefRiv(),
+					objetivo.getChnSpDefYou(), objetivo.getChnSpDefRiv(), objetivo.getChnSpeYou(),
+					objetivo.getChnSpeRiv());
 		}
-	}
-
-	private void changeMove(AbstractMove aCambiar, AbstractMove objetivo) {
-		aCambiar.setDamage(objetivo.getDamage());
-
-		aCambiar.setChnAtkYou(objetivo.getChnAtkYou());
-		aCambiar.setChnSpAtkYou(objetivo.getChnSpAtkYou());
-		aCambiar.setChnDefYou(objetivo.getChnDefYou());
-		aCambiar.setChnSpDefYou(objetivo.getChnSpDefYou());
-		aCambiar.setChnSpeYou(objetivo.getChnSpeYou());
-
-		aCambiar.setChnAtkRiv(objetivo.getChnAtkRiv());
-		aCambiar.setChnSpAtkRiv(objetivo.getChnSpAtkRiv());
-		aCambiar.setChnDefRiv(objetivo.getChnDefRiv());
-		aCambiar.setChnSpDefRiv(objetivo.getChnSpDefRiv());
-		aCambiar.setChnSpeRiv(objetivo.getChnSpeRiv());
 	}
 
 	private void recoilMove(Pokemon atacante, AbstractMove movimiento, int damage) {
@@ -442,6 +493,8 @@ public class Combate {
 		setPokemon(entrenador2);
 		this.pokemon2.add(this.entrenador2.getEquipo().get(0));
 		this.entrenador2.getEquipo().get(0).setPosicion(0);
+
+		setPkmnId(this.combatientes);
 	}
 
 	private void setPokemon(Entrenador entrenador) {
@@ -473,6 +526,12 @@ public class Combate {
 			move = (AbstractMove) utils.Almacen.almacenMovimientos
 					.get((int) (Math.random() * utils.Almacen.almacenMovimientos.size())).copiarMove();
 			pokemon.aprenderMovimiento(move);
+		}
+	}
+
+	private void setPkmnId(ArrayList<Pokemon> pokemons) {
+		for (int i = 0; i < pokemons.size(); i++) {
+			pokemons.get(i).setIdPelea(i);
 		}
 	}
 
