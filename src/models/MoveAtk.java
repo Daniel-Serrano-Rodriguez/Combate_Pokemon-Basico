@@ -23,6 +23,7 @@ public class MoveAtk extends AbstractMove {
 	 *                     SEA PEQUEÑA (E.g. Hace 20 puntos de frio)
 	 * @param maxPP        Entero que representa los max PP del movimiento
 	 * @param damage       Entero que representa el daño (power) del movimiento
+	 * @param precision    Entero que representa la precision del movimiento
 	 * @param chnAtkYou    Entero que representa cuantos niveles cambia a tu ataque
 	 *                     (0, 1, 2, 3)
 	 * @param chnAtkRiv    Entero que representa cuantos niveles cambia al ataque
@@ -45,11 +46,11 @@ public class MoveAtk extends AbstractMove {
 	 *                     velocidad del rival (0, 1, 2, 3)
 	 */
 	public MoveAtk(Estado aplicaEstado, Tipo tipo, Clase clase, Moves move, String nombre, String descripcion,
-			int maxPP, int damage, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou,
-			int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
+			int maxPP, int damage, int precision, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv,
+			int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
 		super(aplicaEstado, CondArena.Ninguno, CondPosiPkmn.Ninguno, tipo, clase, move, nombre, descripcion, maxPP,
-				damage, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv,
-				chnSpeYou, chnSpeRiv);
+				damage, precision, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou,
+				chnSpDefRiv, chnSpeYou, chnSpeRiv);
 	}
 
 }

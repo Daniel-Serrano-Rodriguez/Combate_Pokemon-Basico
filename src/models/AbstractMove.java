@@ -18,8 +18,8 @@ public abstract class AbstractMove implements Cloneable {
 	private Clase clase;
 	private Moves move;
 	private String nombre, descripcion;
-	private int maxPP, actPP, damage, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou,
-			chnSpDefRiv, chnSpeYou, chnSpeRiv;
+	private int maxPP, actPP, damage, precision, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv,
+			chnSpDefYou, chnSpDefRiv, chnSpeYou, chnSpeRiv;
 
 	/**
 	 * Constructor del objeto 'AbstractMove'
@@ -44,6 +44,7 @@ public abstract class AbstractMove implements Cloneable {
 	 *                           movimiento
 	 * @param damage             Entero que representa el daño (power) del
 	 *                           movimiento
+	 * @param precision          Entero que representa la precision del movimiento
 	 * @param chnAtkYou          Entero que representa cuantos niveles cambia a tu
 	 *                           ataque (0, 1, 2, 3)
 	 * @param chnAtkRiv          Entero que representa cuantos niveles cambia al
@@ -66,7 +67,7 @@ public abstract class AbstractMove implements Cloneable {
 	 *                           velocidad del rival (0, 1, 2, 3)
 	 */
 	protected AbstractMove(Estado aplicaEstado, CondArena aplicaCondArena, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
-			Clase clase, Moves move, String nombre, String descripcion, int maxPP, int damage, int chnAtkYou,
+			Clase clase, Moves move, String nombre, String descripcion, int maxPP, int damage, int precision, int chnAtkYou,
 			int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou,
 			int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
 		super();
@@ -81,6 +82,7 @@ public abstract class AbstractMove implements Cloneable {
 		this.maxPP = maxPP;
 		this.actPP = maxPP;
 		this.damage = damage;
+		this.precision = 100;
 		this.chnAtkYou = chnAtkYou;
 		this.chnAtkRiv = chnAtkRiv;
 		this.chnDefYou = chnDefYou;
@@ -102,65 +104,65 @@ public abstract class AbstractMove implements Cloneable {
 		return aplicaEstado;
 	}
 
-//	protected void setAplicaEstado(Estado aplicaEstado) {
-//		this.aplicaEstado = aplicaEstado;
-//	}
+	protected void setAplicaEstado(Estado aplicaEstado) {
+		this.aplicaEstado = aplicaEstado;
+	}
 
 	protected CondArena getAplicaCondArena() {
 		return aplicaCondArena;
 	}
 
-//	protected void setAplicaCondArena(CondArena aplicaCondArena) {
-//		this.aplicaCondArena = aplicaCondArena;
-//	}
+	protected void setAplicaCondArena(CondArena aplicaCondArena) {
+		this.aplicaCondArena = aplicaCondArena;
+	}
 
 	protected CondPosiPkmn getAplicaCondPosiPkmn() {
 		return aplicaCondPosiPkmn;
 	}
 
-//	protected void setAplicaCondPosiPkmn(CondPosiPkmn aplicaCondPosiPkmn) {
-//		this.aplicaCondPosiPkmn = aplicaCondPosiPkmn;
-//	}
+	protected void setAplicaCondPosiPkmn(CondPosiPkmn aplicaCondPosiPkmn) {
+		this.aplicaCondPosiPkmn = aplicaCondPosiPkmn;
+	}
 
 	protected Tipo getTipo() {
 		return tipo;
 	}
 
-//	protected void setTipo(Tipo tipo) {
-//		this.tipo = tipo;
-//	}
+	protected void setTipo(Tipo tipo) {
+		this.tipo = tipo;
+	}
 
 	protected Clase getClase() {
 		return clase;
 	}
 
-//	protected void setClase(Clase clase) {
-//		this.clase = clase;
-//	}
+	protected void setClase(Clase clase) {
+		this.clase = clase;
+	}
 
 	protected Moves getMove() {
 		return move;
 	}
 
-//	protected void setMove(Moves move) {
-//		this.move = move;
-//	}
+	protected void setMove(Moves move) {
+		this.move = move;
+	}
 
 	public String getNombre() {
 		return nombre;
 	}
 
-//	protected void setNombre(String nombre) {
-//		this.nombre = nombre;
-//	}
+	protected void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
 	public String getDescripcion() {
 		return descripcion;
 	}
 
-//	protected void setDescripcion(String descripcion) {
-//		this.descripcion = descripcion;
-//	}
+	protected void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
 
 	public int getMaxPP() {
 		return maxPP;
@@ -184,6 +186,14 @@ public abstract class AbstractMove implements Cloneable {
 
 	protected void setDamage(int damage) {
 		this.damage = damage;
+	}
+	
+	protected int getPrecision() {
+		return precision;
+	}
+
+	protected void setPrecision(int precision) {
+		this.precision = precision;
 	}
 
 	protected int getChnAtkYou() {
@@ -268,7 +278,8 @@ public abstract class AbstractMove implements Cloneable {
 
 	// Methods
 	public Object copiarMove() {
-		AbstractMove move = new AbstractMove() {};
+		AbstractMove move = new AbstractMove() {
+		};
 		move.aplicaEstado = this.aplicaEstado;
 		move.aplicaCondArena = this.aplicaCondArena;
 		move.aplicaCondPosiPkmn = this.aplicaCondPosiPkmn;
