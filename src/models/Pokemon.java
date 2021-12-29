@@ -6,12 +6,20 @@ import java.util.Scanner;
 import models.TipoPokemon.Tipo;
 import utils.Estado;
 
-public class Pokemon {
+public class Pokemon implements Cloneable {
 	private Tipo tipo1, tipo2;
 	private Estado estado;
 	private ArrayList<AbstractMove> movimientos;
+	private Entrenador entrenador;
 	private String nombre;
-	private int maxHP, actualHp, numero, level, attack, defence, spAttack, spDefence, speed;
+	private int maxHP, actualHp, numero, level, attack, defence, spAttack, spDefence, speed, idPelea;
+	/**
+	 * posicion indica la posicón que ocupa el pokemon en el combate, 0 para 1vs1,
+	 * 0-1 para 2vs2 y de 0 a 2 para 3vs3
+	 * 
+	 * ataca indica la posicion del atacante
+	 */
+	private int posicion, ataca;
 
 	/**
 	 * Constructor de objeto 'Pokemon'
@@ -40,6 +48,7 @@ public class Pokemon {
 		this.tipo2 = tipo2;
 		this.estado = estado;
 		this.movimientos = new ArrayList<AbstractMove>();
+		this.entrenador = null;
 		this.nombre = nombre;
 		this.maxHP = maxHP;
 		this.actualHp = maxHP;
@@ -50,6 +59,13 @@ public class Pokemon {
 		this.spAttack = spAttack;
 		this.spDefence = spDefence;
 		this.speed = speed;
+		this.posicion = -1;
+		this.ataca = -1;
+		this.idPelea = -1;
+	}
+
+	private Pokemon() {
+
 	}
 
 	// Getters - Setters
@@ -81,12 +97,16 @@ public class Pokemon {
 		return movimientos;
 	}
 
-	public String getNombre() {
-		return nombre;
+	protected Entrenador getEntrenador() {
+		return entrenador;
 	}
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
+	protected void setEntrenador(Entrenador entrenador) {
+		this.entrenador = entrenador;
+	}
+
+	public String getNombre() {
+		return nombre;
 	}
 
 	public int getMaxHP() {
@@ -107,10 +127,6 @@ public class Pokemon {
 
 	public int getNumero() {
 		return numero;
-	}
-
-	public void setNumero(int numero) {
-		this.numero = numero;
 	}
 
 	public int getLevel() {
@@ -161,6 +177,30 @@ public class Pokemon {
 		this.speed = speed;
 	}
 
+	public int getPosicion() {
+		return posicion;
+	}
+
+	public void setPosicion(int posicion) {
+		this.posicion = posicion;
+	}
+
+	public int getAtaca() {
+		return ataca;
+	}
+
+	public void setAtaca(int ataca) {
+		this.ataca = ataca;
+	}
+
+	public int getIdPelea() {
+		return idPelea;
+	}
+
+	public void setIdPelea(int idPelea) {
+		this.idPelea = idPelea;
+	}
+
 	// Methods
 	public void mostrarMovimientos() {
 		for (int i = 0; i < this.movimientos.size(); i++) {
@@ -180,6 +220,7 @@ public class Pokemon {
 		boolean elegido;
 
 		do {
+			System.out.println("¿Qué hará " + this.nombre + "?\n");
 			mostrarMovimientos();
 			System.out.print("->: ");
 			move = Integer.parseInt(sc.nextLine());
@@ -189,7 +230,7 @@ public class Pokemon {
 				System.out.println("\n\nElige un numero valido\n");
 			} else {
 				elegido = true;
-				return this.movimientos.get(move);
+				return this.movimientos.get(move - 1);
 			}
 		} while (!elegido);
 		return null;
@@ -213,7 +254,7 @@ public class Pokemon {
 					elegido = false;
 					System.out.println("\n\nElige un numero valido\n");
 				} else {
-					System.out.println("\n\n¿Olvidar " + this.movimientos.get(move).getNombre() + "?");
+					System.out.println("\n\n¿Olvidar " + this.movimientos.get(move - 1).getNombre() + "?");
 					System.out.println("\n1.Si\n2.No\n");
 					System.out.print("->: ");
 					opc = Integer.parseInt(sc.nextLine());
@@ -224,7 +265,7 @@ public class Pokemon {
 					} else if (opc == 1) {
 						elegido = true;
 						this.movimientos.add(move, aprender);
-						this.movimientos.remove(move-1);
+						this.movimientos.remove(move - 1);
 					} else {
 						elegido = false;
 					}
@@ -234,4 +275,37 @@ public class Pokemon {
 			this.movimientos.add(aprender);
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	public Pokemon copiarPokemon() {
+		Pokemon poke = new Pokemon();
+		poke.tipo1 = this.tipo1;
+		poke.tipo2 = this.tipo2;
+		poke.estado = this.estado;
+		poke.movimientos = (ArrayList<AbstractMove>) this.movimientos.clone();
+		poke.entrenador = null;
+		poke.nombre = this.nombre;
+		poke.maxHP = this.maxHP;
+		poke.actualHp = this.maxHP;
+		poke.numero = this.numero;
+		poke.level = this.level;
+		poke.attack = this.attack;
+		poke.defence = this.defence;
+		poke.spAttack = this.spAttack;
+		poke.spDefence = this.spDefence;
+		poke.speed = this.speed;
+		poke.posicion = -1;
+		poke.ataca = -1;
+		poke.idPelea = -1;
+
+		return poke;
+	}
+
+	@Override
+	public String toString() {
+		return "Pokemon [tipo1=" + tipo1 + ", tipo2=" + tipo2 + ", estado=" + estado + ", entrenador="
+				+ entrenador.getNombre() + ", nombre=" + nombre + ", maxHP=" + maxHP + ", actualHp=" + actualHp
+				+ ", level=" + level + "]";
+	}
+
 }

@@ -4,6 +4,7 @@ import models.TipoPokemon.Tipo;
 import utils.CondArena;
 import utils.CondPosiPkmn;
 import utils.Estado;
+import utils.Moves;
 
 public class MoveStatus extends AbstractMove {
 
@@ -18,6 +19,9 @@ public class MoveStatus extends AbstractMove {
 	 *                           aplica al objeto 'Pokemon' combatiendo actualmente
 	 * @param tipo               Enum 'TipoPokemon.Tipo' que representa el tipo del
 	 *                           movimiento
+	 * @param clase              Enum 'AbstractMove.Clase' que representa si el
+	 *                           movimiento es Fisico o Especial
+	 * @param move               Enum que representa el movimiento
 	 * @param nombre             String que representa el nombre del movimiento
 	 * @param descripcion        String que representa la descripcion del
 	 *                           movimiento, QUE SEA PEQUEÑA (E.g. Hace 20 puntos de
@@ -47,11 +51,12 @@ public class MoveStatus extends AbstractMove {
 	 *                           velocidad del rival (0, 1, 2, 3)
 	 */
 	public MoveStatus(Estado aplicaEstado, CondArena aplicaCondArena, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
-			String nombre, String descripcion, int maxPP, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv,
-			int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
-		super(aplicaEstado, aplicaCondArena, aplicaCondPosiPkmn, tipo, nombre, descripcion, maxPP, 0, chnAtkYou,
-				chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv, chnSpeYou,
-				chnSpeRiv);
+			Clase clase, Moves move, String nombre, String descripcion, int maxPP, int chnAtkYou, int chnAtkRiv,
+			int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv,
+			int chnSpeYou, int chnSpeRiv) {
+		super(aplicaEstado, aplicaCondArena, aplicaCondPosiPkmn, tipo, clase, move, nombre, descripcion, maxPP, 0,
+				chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv,
+				chnSpeYou, chnSpeRiv);
 	}
 
 }

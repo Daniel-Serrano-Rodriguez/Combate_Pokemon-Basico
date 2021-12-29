@@ -33,7 +33,7 @@ public class Almacen {
 
 			System.out.print((i + 1) + "." + almacenMovimientos.get(i).getNombre() + " Daño: "
 					+ almacenMovimientos.get(i).getDamage() + " PP: " + almacenMovimientos.get(i).getMaxPP()
-					+ " Descripcion: " + almacenMovimientos.get(i).getDescricpion());
+					+ " Descripcion: " + almacenMovimientos.get(i).getDescripcion());
 		}
 		System.out.println("\n");
 	}

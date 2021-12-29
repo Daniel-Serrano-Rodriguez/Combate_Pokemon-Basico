@@ -1,14 +1,20 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 import java.util.Scanner;
 
+import models.AbstractMove.Clase;
+import models.TipoPokemon.Tipo;
 import utils.CondArena;
 import utils.CondPosiPkmn;
+import utils.Estado;
+import utils.Moves;
 
 public class Combate {
 	private Entrenador entrenador1, entrenador2;
-	private ArrayList<Pokemon> pokemon1, pokemon2;
+	private ArrayList<Pokemon> pokemon1, pokemon2, combatientes;
+	private ArrayList<AbstractMove> moves1 = new ArrayList<AbstractMove>(), moves2 = new ArrayList<AbstractMove>();
 	private CondArena condArena;
 	private CondPosiPkmn condPoke1, condPoke2;
 
@@ -21,6 +27,7 @@ public class Combate {
 		this.entrenador2 = entrenador2;
 		this.pokemon1 = new ArrayList<Pokemon>();
 		this.pokemon2 = new ArrayList<Pokemon>();
+		this.combatientes = new ArrayList<Pokemon>();
 		this.condArena = CondArena.Ninguno;
 		this.condPoke1 = CondPosiPkmn.Ninguno;
 		this.condPoke2 = CondPosiPkmn.Ninguno;
@@ -36,7 +43,10 @@ public class Combate {
 		this.entrenador2 = new Entrenador();
 		this.pokemon1 = new ArrayList<Pokemon>();
 		this.pokemon2 = new ArrayList<Pokemon>();
+		this.combatientes = new ArrayList<Pokemon>();
 		this.condArena = CondArena.Ninguno;
+		this.condPoke1 = CondPosiPkmn.Ninguno;
+		this.condPoke2 = CondPosiPkmn.Ninguno;
 	}
 
 	// Getters - Setters
@@ -54,6 +64,10 @@ public class Combate {
 
 	protected ArrayList<Pokemon> getPokemon2() {
 		return pokemon2;
+	}
+
+	protected ArrayList<Pokemon> getCombatientes() {
+		return combatientes;
 	}
 
 	protected CondArena getCondArena() {
@@ -81,17 +95,353 @@ public class Combate {
 	}
 
 	// Methods
-	public void setEntrenadores() {
+
+	// Se implementara mas unas funciones para poder hacer combates 1vs1, 2vs2 o
+	// 3vs3
+	public void prepararCombateTerminal(int entrenadores) {
+		switch (entrenadores) {
+		case 1:
+			setEntrenadores();
+			combateTerminal();
+			break;
+
+		default:
+			System.out.println("\n\nSolo hay combates 1vs1 xD\n");
+			setEntrenadores();
+			combateTerminal();
+		}
+	}
+
+	private void combateTerminal() {
+		Pokemon atacante;
+
+		while (!isFinished()) {
+			for (Pokemon pokemon : this.pokemon1) {
+				this.combatientes.add(pokemon);
+			}
+			for (Pokemon pokemon : this.pokemon2) {
+				this.combatientes.add(pokemon);
+			}
+
+			System.out.println("\nTurno de " + this.entrenador1.getNombre());
+			for (Pokemon pkmn : this.entrenador1.getEquipo()) {
+				System.out.println(pkmn);
+				this.moves1.add(pkmn.elegirMovimiento());
+				if (this.combatientes.size() == 2) {
+					pkmn.setAtaca(0);
+				}
+				// WIP expansión para combates 2vs2, 3vs3
+			}
+
+			System.out.println("\nTurno de " + this.entrenador2.getNombre());
+			for (Pokemon pkmn : this.entrenador2.getEquipo()) {
+				System.out.println(pkmn);
+				this.moves2.add(pkmn.elegirMovimiento());
+				if (this.combatientes.size() == 2) {
+					pkmn.setAtaca(0);
+				}
+			}
+
+			ListIterator<Pokemon> combate = this.combatientes.listIterator();
+
+			while (combate.hasNext()) {
+				atacante = quienEmpiezaTurno(this.combatientes);
+				combatientes.remove(atacante);
+				if (atacante.getEntrenador() == this.entrenador1) {
+					aplicarMovimiento(this.entrenador1.getEquipo(), atacante, this.moves1.get(atacante.getPosicion()),
+							this.pokemon2.get(atacante.getAtaca()));
+				} else {
+					aplicarMovimiento(this.entrenador2.getEquipo(), atacante, this.moves2.get(atacante.getPosicion()),
+							this.pokemon1.get(atacante.getAtaca()));
+				}
+			}
+
+			this.moves1.clear();
+			this.moves2.clear();
+		}
+
+		System.out.println(this.entrenador1.getEquipo().get(0));
+		System.out.println(this.entrenador2.getEquipo().get(0));
+
+//		for (Pokemon poke : combatientes) {
+//			System.out.println(poke);
+//		}
+	}
+
+	private Pokemon quienEmpiezaTurno(ArrayList<Pokemon> pokemons) {
+		int fastest = Integer.MIN_VALUE;
+		Pokemon pkmn = null;
+
+		for (Pokemon pokemon : pokemons) {
+			if (pokemon.getSpeed() > fastest) {
+				pkmn = pokemon;
+			}
+		}
+
+		return pkmn;
+	}
+
+	private void aplicarMovimiento(ArrayList<Pokemon> equipo, Pokemon atacante, AbstractMove movimiento,
+			Pokemon rival) {
+		int damage;
+
+		if (atacante.getActualHp() > 0) {
+			// TODO aplicar formulas de daño
+			if (movimiento.getActPP() > 0) {
+				strangeMove(equipo, atacante, rival, movimiento);
+				damage = calcDamage(atacante, rival, movimiento);
+
+				atacante.setAttack(atacante.getAttack() * movimiento.getChnAtkYou());
+				atacante.setSpAttack(atacante.getSpAttack() * movimiento.getChnSpAtkYou());
+				atacante.setDefence(atacante.getDefence() * movimiento.getChnDefYou());
+				atacante.setSpDefence(atacante.getSpDefence() * movimiento.getChnSpDefYou());
+				atacante.setSpeed(atacante.getSpeed() * movimiento.getChnSpeYou());
+
+				rival.setActualHp(rival.getActualHp() - damage);
+				rival.setAttack(rival.getAttack() * movimiento.getChnAtkRiv());
+				rival.setSpAttack(rival.getSpAttack() * movimiento.getChnSpAtkRiv());
+				rival.setDefence(rival.getDefence() * movimiento.getChnDefRiv());
+				rival.setSpDefence(rival.getSpDefence() * movimiento.getChnSpDefRiv());
+				rival.setSpeed(rival.getSpeed() * movimiento.getChnSpeRiv());
+
+				recoilMove(atacante, movimiento, damage);
+				resetStrangeMove(movimiento);
+
+				movimiento.setActPP(movimiento.getActPP() - 1);
+			} else {
+				damage = calcDamage(atacante, rival, movimiento);
+
+				rival.setActualHp(rival.getActualHp() - damage);
+
+				atacante.setActualHp((int) (atacante.getMaxHP() / 4));
+			}
+		}
+
+	}
+
+//	private void comprobarMove(AbstractMove movimiento) {
+//		// TODO si el movimiento es un enum específico, se realiza lo necesario
+//		/*
+//		 * si es metronomo -> copiar características de un movimiento aleatorio
+//		 *
+//		 * si es paliza -> todos pokemon equipo atacan
+//		 * 
+//		 * si es ayuda -> pokemon random ataca movimiento random
+//		 * 
+//		 * si es movimiento que aplique porcentaje -> se setea lo necesario con un
+//		 * porcentaje
+//		 */
+//
+//	switch (movimiento.getMove()) {
+//		case Double_Edge: {
+//
+//		}
+//		}
+//	}
+
+	private int calcDamage(Pokemon atacante, Pokemon rival, AbstractMove movimiento) {
+		switch (movimiento.getMove()) {
+		case Endeavor:
+			return rival.getActualHp() - (rival.getActualHp() - atacante.getActualHp());
+
+		case Super_Fang:
+			return (int) (rival.getActualHp() / 2);
+
+		default: {
+			double modTiempo = 1, random = 1, stab = 1, quemadura = 1, otro = 1;
+			double getRandom, efectividad;
+			int crit;
+
+			switch (condArena) {
+			case Soleado:
+				if (movimiento.getTipo() == Tipo.Fuego) {
+					modTiempo = 1.5;
+				} else if (movimiento.getTipo() == Tipo.Agua) {
+					modTiempo = 0.5;
+				}
+				break;
+
+			case Lluvia:
+				if (movimiento.getTipo() == Tipo.Agua) {
+					modTiempo = 1.5;
+				} else if (movimiento.getTipo() == Tipo.Fuego) {
+					modTiempo = 0.5;
+				}
+				break;
+
+			default:
+				modTiempo = 1;
+			}
+
+			switch ((int) (Math.random() * 11)) {
+			case 10:
+				crit = 2;
+				break;
+
+			default:
+				crit = 1;
+			}
+
+			getRandom = (int) (Math.random() * 101);
+
+			if (getRandom <= 85) {
+				random = 85;
+			}
+
+			random /= 100;
+
+			if (movimiento.getTipo() == atacante.getTipo1()) {
+				stab = 1.5;
+			}
+
+			if (atacante.getTipo2() != Tipo.Ninguno) {
+				if (movimiento.getTipo() == atacante.getTipo2()) {
+					stab = 1.5;
+				}
+			}
+
+			efectividad = movimiento.getEfectividad(movimiento.getTipo(), rival.getTipo1());
+
+			if (rival.getTipo2() != Tipo.Ninguno) {
+				efectividad += movimiento.getEfectividad(movimiento.getTipo(), rival.getTipo2());
+			}
+
+			if (atacante.getEstado() == Estado.Quemado && movimiento.getClase() == Clase.Fisico) {
+				quemadura = 0.5;
+			}
+
+			return (int) (((((((2 * atacante.getLevel()) / 5) + 2) * movimiento.getDamage()
+					* (atacante.getAttack() / rival.getDefence())) / 50) + 2) * 1 * modTiempo * crit * random * stab
+					* efectividad * quemadura * otro);
+		}
+
+		}
+	}
+
+	private void strangeMove(ArrayList<Pokemon> equipo, Pokemon atacante, Pokemon rival, AbstractMove movimiento) {
+		switch (movimiento.getMove()) {
+		case Assist:
+			ArrayList<AbstractMove> movimientos_equipo = new ArrayList<AbstractMove>();
+			for (Pokemon poke : equipo) {
+				for (AbstractMove move : poke.getMovimientos()) {
+					movimientos_equipo.add(move);
+				}
+			}
+			changeMove(movimiento, movimientos_equipo.get((int) (Math.random() * movimientos_equipo.size())));
+			break;
+
+		case Metronome:
+			changeMove(movimiento, utils.Almacen.almacenMovimientos
+					.get((int) (Math.random() * utils.Almacen.almacenMovimientos.size())));
+			break;
+
+		default:
+		}
+	}
+
+	private void resetStrangeMove(AbstractMove movimiento) {
+		int posicion = -1;
+		switch (movimiento.getMove()) {
+		case Assist:
+			for (int i = 0; i < utils.Almacen.almacenMovimientos.size(); i++) {
+				if (utils.Almacen.almacenMovimientos.get(i).getMove() == Moves.Assist) {
+					posicion = i;
+				}
+			}
+			changeMove(movimiento, utils.Almacen.almacenMovimientos.get(posicion));
+			break;
+
+		case Metronome:
+			for (int i = 0; i < utils.Almacen.almacenMovimientos.size(); i++) {
+				if (utils.Almacen.almacenMovimientos.get(i).getMove() == Moves.Metronome) {
+					posicion = i;
+				}
+			}
+			changeMove(movimiento, utils.Almacen.almacenMovimientos.get(posicion));
+			break;
+
+		default:
+		}
+	}
+
+	private void changeMove(AbstractMove aCambiar, AbstractMove objetivo) {
+		aCambiar.setDamage(objetivo.getDamage());
+
+		aCambiar.setChnAtkYou(objetivo.getChnAtkYou());
+		aCambiar.setChnSpAtkYou(objetivo.getChnSpAtkYou());
+		aCambiar.setChnDefYou(objetivo.getChnDefYou());
+		aCambiar.setChnSpDefYou(objetivo.getChnSpDefYou());
+		aCambiar.setChnSpeYou(objetivo.getChnSpeYou());
+
+		aCambiar.setChnAtkRiv(objetivo.getChnAtkRiv());
+		aCambiar.setChnSpAtkRiv(objetivo.getChnSpAtkRiv());
+		aCambiar.setChnDefRiv(objetivo.getChnDefRiv());
+		aCambiar.setChnSpDefRiv(objetivo.getChnSpDefRiv());
+		aCambiar.setChnSpeRiv(objetivo.getChnSpeRiv());
+	}
+
+	private void recoilMove(Pokemon atacante, AbstractMove movimiento, int damage) {
+		switch (movimiento.getMove()) {
+		// 1/4 del daño realizado
+		case Double_Edge:
+		case Head_Charge:
+		case Submission:
+		case Take_Down:
+		case Wild_Charge:
+			atacante.setActualHp((int) (damage / 4));
+			break;
+
+		// 1/3 del daño realizado
+		case Brave_Bird:
+		case Flare_Blitz:
+		case Volt_Tackle:
+		case Wood_Hammer:
+			atacante.setActualHp((int) (damage / 3));
+			break;
+
+		// 1/2 del daño realizado
+		case Head_Smash:
+		case Light_Ruin:
+			atacante.setActualHp((int) (damage / 2));
+			break;
+
+		// 1/2 de la vida actual
+		case Shadow_End:
+			atacante.setActualHp((int) (atacante.getActualHp() / 3));
+			break;
+
+		// 1/16 de la vida maxima
+		case Shadow_Rush:
+			atacante.setActualHp((int) (atacante.getMaxHP() / 3));
+			break;
+
+		default:
+		}
+	}
+
+	private boolean isFinished() {
+		if (!this.entrenador1.puedeCombatir() || !this.entrenador2.puedeCombatir()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private void setEntrenadores() {
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
 
 		System.out.print("Nombre del primer entrenador: ");
 		this.entrenador1.setNombre(sc.nextLine());
+		setPokemon(entrenador1);
+		this.pokemon1.add(this.entrenador1.getEquipo().get(0));
+		this.entrenador1.getEquipo().get(0).setPosicion(0);
+
 		System.out.print("Nombre del segundo entrenador: ");
 		this.entrenador2.setNombre(sc.nextLine());
-
-		setPokemon(entrenador1);
 		setPokemon(entrenador2);
+		this.pokemon2.add(this.entrenador2.getEquipo().get(0));
+		this.entrenador2.getEquipo().get(0).setPosicion(0);
 	}
 
 	private void setPokemon(Entrenador entrenador) {
@@ -110,19 +460,22 @@ public class Combate {
 				System.out.println("\n\nElige un numero correcto\n");
 			} else {
 				elegido = true;
-				setPkmnMoves(utils.Almacen.almacenPokemon.get(opc));
-				entrenador.meterPkmnEquipo(utils.Almacen.almacenPokemon.get(opc));
-				utils.Almacen.almacenPokemon.remove(opc);
+				entrenador.meterPkmnEquipo((Pokemon) utils.Almacen.almacenPokemon.get(opc - 1).copiarPokemon());
+				entrenador.getEquipo().get(entrenador.getEquipo().size() - 1).setEntrenador(entrenador);
 			}
 		} while (!elegido);
+		setPkmnMoves(entrenador.getEquipo().get(entrenador.getEquipo().size() - 1));
 	}
 
 	private void setPkmnMoves(Pokemon pokemon) {
 		for (int i = 0; i < 4; i++) {
-			pokemon.aprenderMovimiento(utils.Almacen.almacenMovimientos
-					.get((int) (Math.random() * utils.Almacen.almacenMovimientos.size())));
+			AbstractMove move;
+			move = (AbstractMove) utils.Almacen.almacenMovimientos
+					.get((int) (Math.random() * utils.Almacen.almacenMovimientos.size())).copiarMove();
+			pokemon.aprenderMovimiento(move);
 		}
 	}
+
 	/*
 	 * TODO En el combate: si condArena != CondArena.Ninguno, aplicar el daño y las
 	 * condiciones que sean Si condPoke1/2 != CondPosiPoke.Ninguno, aplicar el daño

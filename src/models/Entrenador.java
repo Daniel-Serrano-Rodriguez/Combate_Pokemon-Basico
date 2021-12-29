@@ -1,5 +1,7 @@
 package models;
 
+import java.util.ArrayList;
+
 public class Entrenador {
 	private Equipo equipo;
 	private String nombre;
@@ -19,7 +21,7 @@ public class Entrenador {
 	 * 
 	 * @param nombre String que representa el nombre del Entrenador
 	 */
-	protected Entrenador() {
+	public Entrenador() {
 		this.nombre = "";
 		this.equipo = new Equipo();
 	}
@@ -33,8 +35,22 @@ public class Entrenador {
 		this.nombre = nombre;
 	}
 
+	protected ArrayList<Pokemon> getEquipo() {
+		return this.equipo.getEquipo();
+	}
+
 	// Methods
 	protected void meterPkmnEquipo(Pokemon pokemon) {
 		this.equipo.meterPokemon(pokemon);
+	}
+
+	protected boolean puedeCombatir() {
+		for (Pokemon pokemon : this.equipo.getEquipo()) {
+			if (pokemon.getActualHp() > 0) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

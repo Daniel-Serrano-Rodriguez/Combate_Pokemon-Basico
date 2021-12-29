@@ -12,7 +12,7 @@ public class Equipo {
 	/**
 	 * Constructor del objeto 'Equipo'. Se crea vacío
 	 */
-	protected Equipo() {
+	public Equipo() {
 		this.equipo = new ArrayList<Pokemon>();
 	}
 
