@@ -202,6 +202,7 @@ public class Combate {
 
 				case Recarga:
 					System.out.println(atacante.getNombre() + " esta recargandose");
+					break;
 
 				default: {
 					doMove(equipo, atacante, movimiento, rival);
@@ -222,27 +223,35 @@ public class Combate {
 	public void doMove(ArrayList<Pokemon> equipo, Pokemon atacante, AbstractMove movimiento, Pokemon rival) {
 		if (movimiento.getPrecision() > 0) {
 			if (((int) (Math.random() * 101)) < movimiento.getPrecision()) {
-				calcMove(equipo, atacante, movimiento, rival);
+				condMove(equipo, atacante, movimiento, rival);
 			} else {
 				System.out.println("Ha fallado!");
 			}
 		} else {
-			calcMove(equipo, atacante, movimiento, rival);
+			condMove(equipo, atacante, movimiento, rival);
 		}
 	}
 
-	public void calcMove(ArrayList<Pokemon> equipo, Pokemon atacante, AbstractMove movimiento, Pokemon rival) {
-		if (movimiento.getGolpesMax() == 1) {
-			ataque(equipo, atacante, movimiento, rival);
-		} else {
-			int chance = (int) (Math.random() * (movimiento.getGolpesMax() + 1));
-			if (chance < movimiento.getGolpesMin()) {
-				chance = movimiento.getGolpesMin();
+	public void condMove(ArrayList<Pokemon> equipo, Pokemon atacante, AbstractMove movimiento, Pokemon rival) {
+		if (movimiento instanceof MoveAtkMulti) {
+			int chance = (int) (Math.random() * (((MoveAtkMulti) movimiento).getGolpesMax() + 1));
+			if (chance < ((MoveAtkMulti) movimiento).getGolpesMin()) {
+				chance = ((MoveAtkMulti) movimiento).getGolpesMin();
 			}
 			for (int i = 0; i < chance; i++) {
 				ataque(equipo, atacante, movimiento, rival);
 			}
 			System.out.println(movimiento.getNombre() + " ha golpeado " + chance + " veces");
+		} else if (movimiento instanceof MoveAtkCarga) {
+			if (((MoveAtkCarga) movimiento).getTurnoCargado() < ((MoveAtkCarga) movimiento).getTurnosCarga()) {
+				System.out.println(atacante.getNombre() + " está cargando el ataque");
+				((MoveAtkCarga) movimiento).setTurnoCargado(((MoveAtkCarga) movimiento).getTurnoCargado() + 1);
+			} else {
+				ataque(equipo, atacante, movimiento, rival);
+				((MoveAtkCarga) movimiento).setTurnoCargado(1);
+			}
+		} else {
+			ataque(equipo, atacante, movimiento, rival);
 		}
 	}
 
@@ -251,6 +260,7 @@ public class Combate {
 		AbstractMove apoyo = (AbstractMove) movimiento.copiarMove();
 		movimiento = (AbstractMove) move.copiarMove();
 		statusAttack(atacante, rival, movimiento);
+		chargeMove(movimiento);
 
 		int damage = calcDamage(atacante, rival, movimiento);
 
@@ -269,7 +279,7 @@ public class Combate {
 //		/*
 //		 * si es metronomo -> copiar características de un movimiento aleatorio
 //		 *
-//		 * si es paliza -> todos pokemon equipo atacan
+//		 * si es paliza -> todos pokemon equipo atacanPokemon pokemon1, Pokemon pokemon2
 //		 * 
 //		 * si es ayuda -> pokemon random ataca movimiento random
 //		 * 
@@ -355,18 +365,32 @@ public class Combate {
 				quemadura = 0.5;
 			}
 
-			if (movimiento.getClase() == Clase.Fisico) {
-				return (int) (((((((2 * atacante.getLevel()) / 5) + 2) * movimiento.getDamage()
-						* (atacante.getAttack() / rival.getDefence())) / 50) + 2) * 1 * modTiempo * crit * random * stab
-						* efectividad * quemadura * otro);
+			if (movimiento instanceof MoveAtkCarga) {
+				if (((MoveAtkCarga) movimiento).getTurnoCargado() == ((MoveAtkCarga) movimiento).getTurnosCarga()) {
+					return attackDamage(atacante, rival, movimiento, modTiempo, crit, random, stab, efectividad,
+							quemadura, otro);
+				} else {
+					return 0;
+				}
 			} else {
-				return (int) (((((((2 * atacante.getLevel()) / 5) + 2) * movimiento.getDamage()
-						* (atacante.getSpAttack() / rival.getSpDefence())) / 50) + 2) * 1 * modTiempo * crit * random
-						* stab * efectividad * quemadura * otro);
+				return attackDamage(atacante, rival, movimiento, modTiempo, crit, random, stab, efectividad, quemadura,
+						otro);
 			}
-
 		}
 
+		}
+	}
+
+	private int attackDamage(Pokemon atacante, Pokemon rival, AbstractMove movimiento, double modTiempo, int crit,
+			double random, double stab, double efectividad, double quemadura, double otro) {
+		if (movimiento.getClase() == Clase.Fisico) {
+			return (int) (((((((2 * atacante.getLevel()) / 5) + 2) * movimiento.getDamage()
+					* (atacante.getAttack() / rival.getDefence())) / 50) + 2) * 1 * modTiempo * crit * random * stab
+					* efectividad * quemadura * otro);
+		} else {
+			return (int) (((((((2 * atacante.getLevel()) / 5) + 2) * movimiento.getDamage()
+					* (atacante.getSpAttack() / rival.getSpDefence())) / 50) + 2) * 1 * modTiempo * crit * random * stab
+					* efectividad * quemadura * otro);
 		}
 	}
 
@@ -405,6 +429,23 @@ public class Combate {
 			rival.setSpDefence(rival.getSpDefence() * movimiento.getChnSpDefRiv());
 			rival.setSpeed(rival.getSpeed() * movimiento.getChnSpeRiv());
 		}
+	}
+
+	private void chargeMove(AbstractMove movimiento) {
+		switch (movimiento.getMove()) {
+		case Solar_Beam:
+			switch (this.condArena) {
+			case Soleado:
+				((MoveAtkCarga) movimiento).setTurnoCargado(2);
+				break;
+
+			default:
+			}
+			break;
+
+		default:
+		}
+
 	}
 
 	private void statusAttack(Pokemon atacante, Pokemon rival, AbstractMove movimiento) {
@@ -447,18 +488,45 @@ public class Combate {
 				atacante.setTurnosEstado(turnos);
 				break;
 
+			case Thunder_Wave:
+				rival.setEstado(Estado.Paralisis);
+				rival.setTurnosEstado(999999);
+				break;
+
+			case Flamethrower:
+				if (((int) (Math.random() * 101)) <= 10) {
+					rival.setEstado(Estado.Quemado);
+					rival.setTurnosEstado(999999);
+				}
+				break;
+
+			case Fire_Fang:
+				if (((int) (Math.random() * 2)) == 0) {
+					if (((int) (Math.random() * 101)) <= 10) {
+						rival.setEstado(Estado.Quemado);
+						rival.setTurnosEstado(999999);
+					}
+				} else {
+					if (((int) (Math.random() * 101)) <= 30) {
+						rival.setEstado(Estado.Retroceder);
+						rival.setTurnosEstado(1);
+					}
+				}
+				break;
+
+			case Blaze_Kick:
+				if (((int) (Math.random() * 101)) <= 10) {
+					rival.setEstado(Estado.Quemado);
+					rival.setTurnosEstado(999999);
+				}
+				break;
+
 			default:
 			}
 		}
 	}
 
 	private void applyStatus(Pokemon atacante, Pokemon rival) {
-		if (atacante.getTurnosEstado() > 0) {
-			atacante.setTurnosEstado(atacante.getTurnosEstado() - 1);
-		} else if (atacante.getTurnosEstado() == 0) {
-			atacante.setEstado(Estado.Ninguno);
-		}
-
 		switch (atacante.getEstado()) {
 		case Quemado:
 			if (rival.getActualHp() > 0 && (atacante.getTipo1() == Tipo.Fuego || atacante.getTipo2() == Tipo.Fuego)) {
@@ -471,9 +539,15 @@ public class Combate {
 	}
 
 	private void removeStatus(Pokemon pokemon) {
+		if (pokemon.getTurnosEstado() > 0) {
+			pokemon.setTurnosEstado(pokemon.getTurnosEstado() - 1);
+		} else if (pokemon.getTurnosEstado() == 0) {
+			pokemon.setEstado(Estado.Ninguno);
+		}
+
 		switch (pokemon.getEstado()) {
 		case Paralisis:
-			if ((int) (Math.random() * 101) < 15) {
+			if ((int) (Math.random() * 101) <= 15) {
 				pokemon.setEstado(Estado.Ninguno);
 				pokemon.setTurnosEstado(0);
 				System.out.println(pokemon.getNombre() + " ya no está paralizado");
@@ -485,6 +559,14 @@ public class Combate {
 				pokemon.setEstado(Estado.Ninguno);
 				pokemon.setTurnosEstado(0);
 				System.out.println(pokemon.getNombre() + " se ha despertado");
+			}
+			break;
+
+		case Quemado:
+			if ((int) (Math.random() * 101) <= 15) {
+				pokemon.setEstado(Estado.Ninguno);
+				pokemon.setTurnosEstado(0);
+				System.out.println(pokemon.getNombre() + " ya no está quemado");
 			}
 			break;
 
@@ -581,8 +663,22 @@ public class Combate {
 		}
 	}
 
-	private void condArena() {
+	private void condArenaBeforeCalc(ArrayList<Pokemon> combatientes) {
+		switch (this.condArena) {
+		case Soleado:
+			break;
 
+		default:
+		}
+	}
+
+	private void condArenaAfterCalc(ArrayList<Pokemon> combatientes) {
+		switch (this.condArena) {
+		case Soleado:
+			break;
+
+		default:
+		}
 	}
 
 	private void condPosiPkmn() {

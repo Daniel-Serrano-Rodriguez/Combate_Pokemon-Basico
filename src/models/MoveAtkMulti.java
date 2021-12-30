@@ -1,12 +1,12 @@
 package models;
 
 import models.TipoPokemon.Tipo;
-import utils.CondArena;
-import utils.CondPosiPkmn;
 import utils.Estado;
 import utils.Moves;
 
-public class MoveAtk extends AbstractMove {
+public class MoveAtkMulti extends MoveAtk {
+
+	private int golpesMin, golpesMax;
 
 	/**
 	 * Constructor del objeto 'MoveAtk', que son ataques con un daño específico
@@ -24,6 +24,10 @@ public class MoveAtk extends AbstractMove {
 	 * @param maxPP        Entero que representa los max PP del movimiento
 	 * @param damage       Entero que representa el daño (power) del movimiento
 	 * @param precision    Entero que representa la precision del movimiento
+	 * @param golpesMin    Entero que representa la cantidad minima de golpes que
+	 *                     realiza el movimiento
+	 * @param golpesMax    Entero que representa la cantidad maxima de golpes que
+	 *                     realiza el movimiento
 	 * @param chnAtkYou    Entero que representa cuantos niveles cambia a tu ataque
 	 *                     (0, 1, 2, 3)
 	 * @param chnAtkRiv    Entero que representa cuantos niveles cambia al ataque
@@ -45,13 +49,26 @@ public class MoveAtk extends AbstractMove {
 	 * @param chnSpeRiv    Entero que representa cuantos niveles cambia a la
 	 *                     velocidad del rival (0, 1, 2, 3)
 	 */
-	public MoveAtk(Estado aplicaEstado, Tipo tipo, Clase clase, Moves move, String nombre, String descripcion,
-			int maxPP, int damage, int precision, int chnAtkYou, int chnAtkRiv,
+	public MoveAtkMulti(Estado aplicaEstado, Tipo tipo, Clase clase, Moves move, String nombre, String descripcion,
+			int maxPP, int damage, int precision, int golpesMin, int golpesMax, int chnAtkYou, int chnAtkRiv,
 			int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv,
 			int chnSpeYou, int chnSpeRiv) {
-		super(aplicaEstado, CondArena.Ninguno, CondPosiPkmn.Ninguno, tipo, clase, move, nombre, descripcion, maxPP,
-				damage, precision, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou,
-				chnSpAtkRiv, chnSpDefYou, chnSpDefRiv, chnSpeYou, chnSpeRiv);
+		super(aplicaEstado, tipo, clase, move, nombre, descripcion, maxPP, damage, precision, chnAtkYou, chnAtkRiv,
+				chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv, chnSpeYou, chnSpeRiv);
+		this.golpesMin = golpesMin;
+		this.golpesMax = golpesMax;
+	}
+
+	protected int getGolpesMin() {
+		return golpesMin;
+	}
+
+	protected void setGolpesMin(int golpesMin) {
+		this.golpesMin = golpesMin;
+	}
+
+	protected int getGolpesMax() {
+		return golpesMax;
 	}
 
 }

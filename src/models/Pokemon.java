@@ -42,7 +42,7 @@ public class Pokemon implements Cloneable {
 	 * @param spDefence Entero que representa la defense especila del Pokemon
 	 * @param speed     Entero que representa la velocidad del pokemon
 	 */
-	public Pokemon(Tipo tipo1, Tipo tipo2, Estado estado, String nombre, int maxHP, int numero, int level, int attack,
+	public Pokemon(Tipo tipo1, Tipo tipo2, Estado estado, String nombre, int numero, int level, int maxHP, int attack,
 			int defence, int spAttack, int spDefence, int speed) {
 		super();
 		this.tipo1 = tipo1;

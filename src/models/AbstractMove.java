@@ -8,7 +8,7 @@ import utils.Moves;
 
 public abstract class AbstractMove implements Cloneable {
 	protected enum Clase {
-		Fisico, Especial
+		Fisico, Especial, Estado
 	}
 
 	private Estado aplicaEstado;
@@ -18,7 +18,7 @@ public abstract class AbstractMove implements Cloneable {
 	private Clase clase;
 	private Moves move;
 	private String nombre, descripcion;
-	private int maxPP, actPP, damage, precision, golpesMin, golpesMax, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv,
+	private int maxPP, actPP, damage, precision, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv,
 			chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv, chnSpeYou, chnSpeRiv;
 
 	/**
@@ -72,7 +72,7 @@ public abstract class AbstractMove implements Cloneable {
 	 */
 	protected AbstractMove(Estado aplicaEstado, CondArena aplicaCondArena, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
 			Clase clase, Moves move, String nombre, String descripcion, int maxPP, int damage, int precision,
-			int golpesMin, int golpesMax, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou,
+			int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou,
 			int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
 		super();
 		this.aplicaEstado = aplicaEstado;
@@ -87,8 +87,6 @@ public abstract class AbstractMove implements Cloneable {
 		this.actPP = maxPP;
 		this.damage = damage;
 		this.precision = 100;
-		this.golpesMin = golpesMin;
-		this.golpesMax = golpesMax;
 		this.chnAtkYou = chnAtkYou;
 		this.chnAtkRiv = chnAtkRiv;
 		this.chnDefYou = chnDefYou;
@@ -200,14 +198,6 @@ public abstract class AbstractMove implements Cloneable {
 
 	protected void setPrecision(int precision) {
 		this.precision = precision;
-	}
-	
-	protected int getGolpesMin() {
-		return golpesMin;
-	}
-
-	protected int getGolpesMax() {
-		return golpesMax;
 	}
 
 	protected int getChnAtkYou() {
