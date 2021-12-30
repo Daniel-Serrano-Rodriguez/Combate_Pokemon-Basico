@@ -182,43 +182,68 @@ public class Combate {
 
 	private void aplicarMovimiento(ArrayList<Pokemon> equipo, Pokemon atacante, AbstractMove movimiento,
 			Pokemon rival) {
-		int damage = 0;
+		int damage = 0, chance = 0;
 
 		if (atacante.getActualHp() > 0) {
 			// TODO aplicar formulas de daño
 			if (movimiento.getActPP() > 0) {
-				if (movimiento.getPrecision() > 0) {
-					if (atacante.getEstado() == Estado.Paralisis) {
-						if ((int) (Math.random() * 101) > 25)
+				removeStatus(atacante);
+
+				if (atacante.getEstado() == Estado.Ninguno) {
+					if (movimiento.getPrecision() > 0) {
+						if (movimiento.getGolpes() == 1) {
 							ataque(equipo, atacante, movimiento, rival, damage);
-					} else if (atacante.getEstado() == Estado.Retroceder) {
-						
-					}
-				} else {
-					if ((int) (Math.random() * 101) < movimiento.getPrecision()) {
-						if ((int) (Math.random() * 101) > 25)
-							ataque(equipo, atacante, movimiento, rival, damage);
+						} else {
+							chance = (int) (Math.random() * (movimiento.getGolpes() + 1));
+							if (chance == 0) {
+								chance = 1;
+							}
+							for (int i = 0; i < chance; i++) {
+								ataque(equipo, atacante, movimiento, rival, damage);
+							}
+							System.out.println(movimiento.getNombre() + " ha golpeado " + chance + " veces");
+						}
+					} else {
+						System.out.println("Ha fallado!");
 					}
 				}
+
+				if (atacante.getEstado() == Estado.Paralisis) {
+					if ((int) (Math.random() * 101) > 25) {
+						if (movimiento.getPrecision() > 0) {
+							if (movimiento.getGolpes() == 1) {
+								ataque(equipo, atacante, movimiento, rival, damage);
+							} else {
+								chance = (int) (Math.random() * (movimiento.getGolpes() + 1));
+								if (chance == 0) {
+									chance = 1;
+								}
+								for (int i = 0; i < chance; i++) {
+									ataque(equipo, atacante, movimiento, rival, damage);
+								}
+								System.out.println(movimiento.getNombre() + " ha golpeado " + chance + " veces");
+							}
+						} else {
+							System.out.println("Ha fallado!");
+						}
+					} else {
+						System.out.println(atacante.getNombre() + " está paralizado");
+					}
+				}
+
+				if (atacante.getEstado() == Estado.Retroceder) {
+					System.out.println(atacante.getNombre() + " ha retrocedido");
+				}
+
 			} else {
-				if ((int) (Math.random() * 101) > 25) {
-					damage = calcDamage(atacante, rival, movimiento);
+				damage = calcDamage(atacante, rival, utils.Almacen.almacenMovimientos.get(0));
 
-					rival.setActualHp(rival.getActualHp() - damage);
+				rival.setActualHp(rival.getActualHp() - damage);
 
-					atacante.setActualHp((int) (atacante.getMaxHP() / 4));
-				}
-			}
-			if (rival.getActualHp() > 0 && atacante.getEstado() == Estado.Quemado
-					&& (atacante.getTipo1() == Tipo.Fuego || atacante.getTipo2() == Tipo.Fuego)) {
-				atacante.setActualHp(atacante.getActualHp() - ((int) (atacante.getMaxHP() / 16)));
+				atacante.setActualHp(atacante.getActualHp() - ((int) (atacante.getMaxHP() / 4)));
 			}
 		}
-		if (atacante.getTurnosEstado() > 0) {
-			atacante.setTurnosEstado(atacante.getTurnosEstado() - 1);
-		} else if(atacante.getTurnosEstado() == 0) {
-			atacante.setEstado(Estado.Ninguno);
-		}
+		applyStatus(atacante, rival);
 	}
 
 	public void ataque(ArrayList<Pokemon> equipo, Pokemon atacante, AbstractMove movimiento, Pokemon rival,
@@ -247,7 +272,8 @@ public class Combate {
 
 		movimiento = (AbstractMove) apoyo.copiarMove();
 
-		movimiento.setActPP(movimiento.getActPP() - 1);
+		if (movimiento.getActPP() > 0)
+			movimiento.setActPP(movimiento.getActPP() - 1);
 	}
 
 //	private void comprobarMove(AbstractMove movimiento) {
@@ -350,6 +376,7 @@ public class Combate {
 						* (atacante.getSpAttack() / rival.getSpDefence())) / 50) + 2) * 1 * modTiempo * crit * random
 						* stab * efectividad * quemadura * otro);
 			}
+
 		}
 
 		}
@@ -361,7 +388,7 @@ public class Combate {
 			case Relic_Song:
 				if (((int) (Math.random() * 101)) <= 10) {
 					rival.setEstado(Estado.Dormido);
-					rival.setTurnosEstado((int) (Math.random() * 3) + 1);
+					rival.setTurnosEstado(3);
 				}
 				break;
 
@@ -375,21 +402,60 @@ public class Combate {
 			case Bolt_Strike:
 				if (((int) (Math.random() * 101)) <= 20) {
 					rival.setEstado(Estado.Paralisis);
-					rival.setTurnosEstado(1);
+					rival.setTurnosEstado(999999);
 				}
 				break;
 
 			case Spark:
 				if (((int) (Math.random() * 101)) <= 30) {
 					rival.setEstado(Estado.Paralisis);
-					rival.setTurnosEstado(1);
+					rival.setTurnosEstado(999999);
 				}
 				break;
 
 			default:
 			}
 		}
+	}
 
+	private void applyStatus(Pokemon atacante, Pokemon rival) {
+		if (atacante.getTurnosEstado() > 0) {
+			atacante.setTurnosEstado(atacante.getTurnosEstado() - 1);
+		} else if (atacante.getTurnosEstado() == 0) {
+			atacante.setEstado(Estado.Ninguno);
+		}
+
+		switch (atacante.getEstado()) {
+		case Quemado:
+			if (rival.getActualHp() > 0 && (atacante.getTipo1() == Tipo.Fuego || atacante.getTipo2() == Tipo.Fuego)) {
+				atacante.setActualHp(atacante.getActualHp() - ((int) (atacante.getMaxHP() / 16)));
+			}
+			break;
+
+		default:
+		}
+	}
+
+	private void removeStatus(Pokemon pokemon) {
+		switch (pokemon.getEstado()) {
+		case Paralisis:
+			if ((int) (Math.random() * 101) < 15) {
+				pokemon.setEstado(Estado.Ninguno);
+				pokemon.setTurnosEstado(0);
+				System.out.println(pokemon.getNombre() + " ya no está paralizado");
+			}
+			break;
+
+		case Dormido:
+			if ((int) (Math.random() * 101) <= 33) {
+				pokemon.setEstado(Estado.Ninguno);
+				pokemon.setTurnosEstado(0);
+				System.out.println(pokemon.getNombre() + " se ha despertado");
+			}
+			break;
+
+		default:
+		}
 	}
 
 	private AbstractMove strangeMove(ArrayList<Pokemon> equipo, AbstractMove movimiento) {
@@ -468,6 +534,14 @@ public class Combate {
 
 		default:
 		}
+	}
+
+	private void condArena() {
+
+	}
+
+	private void condPosiPkmn() {
+
 	}
 
 	private boolean isFinished() {
