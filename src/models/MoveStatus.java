@@ -56,7 +56,7 @@ public class MoveStatus extends AbstractMove {
 			int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou,
 			int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
 		super(aplicaEstado, aplicaCondArena, aplicaCondPosiPkmn, tipo, clase, move, nombre, descripcion, maxPP, 0,
-				precision, 1, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou,
+				precision, 1, 1, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou,
 				chnSpDefRiv, chnSpeYou, chnSpeRiv);
 	}
 
