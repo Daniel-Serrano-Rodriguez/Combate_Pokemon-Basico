@@ -6,7 +6,7 @@ import utils.Moves;
 
 public class MoveAtkCarga extends MoveAtk {
 
-	private int turnosCarga, turnoCargado;
+	private int turnosNecesarios, turnosCargados;
 
 	/**
 	 * Constructor del objeto 'MoveAtk', que son ataques con un daño específico
@@ -24,7 +24,7 @@ public class MoveAtkCarga extends MoveAtk {
 	 * @param maxPP        Entero que representa los max PP del movimiento
 	 * @param damage       Entero que representa el daño (power) del movimiento
 	 * @param precision    Entero que representa la precision del movimiento
-	 * @param turnosCarga  Entero que representa cuantos turnos tarda en cargar el
+	 * @param turnosNecesarios  Entero que representa cuantos turnos tarda en cargar el
 	 *                     ataque
 	 * @param chnAtkYou    Entero que representa cuantos niveles cambia a tu ataque
 	 *                     (0, 1, 2, 3)
@@ -48,25 +48,25 @@ public class MoveAtkCarga extends MoveAtk {
 	 *                     velocidad del rival (0, 1, 2, 3)
 	 */
 	public MoveAtkCarga(Estado aplicaEstado, Tipo tipo, Clase clase, Moves move, String nombre, String descripcion,
-			int maxPP, int damage, int precision, int turnosCarga, int chnAtkYou, int chnAtkRiv, int chnDefYou,
+			int maxPP, int damage, int precision, int turnosNecesarios, int chnAtkYou, int chnAtkRiv, int chnDefYou,
 			int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou,
 			int chnSpeRiv) {
 		super(aplicaEstado, tipo, clase, move, nombre, descripcion, maxPP, damage, precision, chnAtkYou, chnAtkRiv,
 				chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv, chnSpeYou, chnSpeRiv);
-		this.turnoCargado = 1;
-		this.turnosCarga = turnosCarga;
+		this.turnosCargados = 1;
+		this.turnosNecesarios = turnosNecesarios;
 	}
 
-	protected int getTurnosCarga() {
-		return turnosCarga;
+	protected int getTurnosNecesarios() {
+		return turnosNecesarios;
 	}
 
-	protected int getTurnoCargado() {
-		return turnoCargado;
+	protected int getTurnosCargados() {
+		return turnosCargados;
 	}
 
 	protected void setTurnoCargado(int turnoCargado) {
-		this.turnoCargado = turnoCargado;
+		this.turnosCargados = turnoCargado;
 	}
 
 }

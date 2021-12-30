@@ -243,9 +243,9 @@ public class Combate {
 			}
 			System.out.println(movimiento.getNombre() + " ha golpeado " + chance + " veces");
 		} else if (movimiento instanceof MoveAtkCarga) {
-			if (((MoveAtkCarga) movimiento).getTurnoCargado() < ((MoveAtkCarga) movimiento).getTurnosCarga()) {
+			if (((MoveAtkCarga) movimiento).getTurnosCargados() < ((MoveAtkCarga) movimiento).getTurnosNecesarios()) {
 				System.out.println(atacante.getNombre() + " está cargando el ataque");
-				((MoveAtkCarga) movimiento).setTurnoCargado(((MoveAtkCarga) movimiento).getTurnoCargado() + 1);
+				((MoveAtkCarga) movimiento).setTurnoCargado(((MoveAtkCarga) movimiento).getTurnosCargados() + 1);
 			} else {
 				ataque(equipo, atacante, movimiento, rival);
 				((MoveAtkCarga) movimiento).setTurnoCargado(1);
@@ -261,10 +261,15 @@ public class Combate {
 		movimiento = (AbstractMove) move.copiarMove();
 		statusAttack(atacante, rival, movimiento);
 		chargeMove(movimiento);
+		condArenaBeforeCalc(movimiento);
 
 		int damage = calcDamage(atacante, rival, movimiento);
 
 		applyDamage(atacante, rival, move, damage);
+		applyStatus(atacante, rival, movimiento);
+		applyCondPosiPkmn(equipo, atacante, movimiento, rival);
+
+		condArenaAfterCalc(this.combatientes);
 
 		recoilMove(atacante, movimiento, damage);
 
@@ -273,26 +278,6 @@ public class Combate {
 		if (movimiento.getActPP() > 0)
 			movimiento.setActPP(movimiento.getActPP() - 1);
 	}
-
-//	private void comprobarMove(AbstractMove movimiento) {
-//		// TODO si el movimiento es un enum específico, se realiza lo necesario
-//		/*
-//		 * si es metronomo -> copiar características de un movimiento aleatorio
-//		 *
-//		 * si es paliza -> todos pokemon equipo atacanPokemon pokemon1, Pokemon pokemon2
-//		 * 
-//		 * si es ayuda -> pokemon random ataca movimiento random
-//		 * 
-//		 * si es movimiento que aplique porcentaje -> se setea lo necesario con un
-//		 * porcentaje
-//		 */
-//
-//	switch (movimiento.getMove()) {
-//		case Double_Edge: {
-//
-//		}
-//		}
-//	}
 
 	private int calcDamage(Pokemon atacante, Pokemon rival, AbstractMove movimiento) {
 		switch (movimiento.getMove()) {
@@ -366,7 +351,8 @@ public class Combate {
 			}
 
 			if (movimiento instanceof MoveAtkCarga) {
-				if (((MoveAtkCarga) movimiento).getTurnoCargado() == ((MoveAtkCarga) movimiento).getTurnosCarga()) {
+				if (((MoveAtkCarga) movimiento).getTurnosCargados() == ((MoveAtkCarga) movimiento)
+						.getTurnosNecesarios()) {
 					return attackDamage(atacante, rival, movimiento, modTiempo, crit, random, stab, efectividad,
 							quemadura, otro);
 				} else {
@@ -395,41 +381,98 @@ public class Combate {
 	}
 
 	private void applyDamage(Pokemon atacante, Pokemon rival, AbstractMove movimiento, int damage) {
-
 		if (atacante.getEstado() == Estado.Confusion) {
 			if (((int) (Math.random() * 101)) <= 33) {
 				atacante.setActualHp(rival.getActualHp() - damage);
 			} else {
 				rival.setActualHp(rival.getActualHp() - damage);
-
-				atacante.setAttack(atacante.getAttack() * movimiento.getChnAtkYou());
-				atacante.setSpAttack(atacante.getSpAttack() * movimiento.getChnSpAtkYou());
-				atacante.setDefence(atacante.getDefence() * movimiento.getChnDefYou());
-				atacante.setSpDefence(atacante.getSpDefence() * movimiento.getChnSpDefYou());
-				atacante.setSpeed(atacante.getSpeed() * movimiento.getChnSpeYou());
-
-				rival.setAttack(rival.getAttack() * movimiento.getChnAtkRiv());
-				rival.setSpAttack(rival.getSpAttack() * movimiento.getChnSpAtkRiv());
-				rival.setDefence(rival.getDefence() * movimiento.getChnDefRiv());
-				rival.setSpDefence(rival.getSpDefence() * movimiento.getChnSpDefRiv());
-				rival.setSpeed(rival.getSpeed() * movimiento.getChnSpeRiv());
 			}
 		} else {
 			rival.setActualHp(rival.getActualHp() - damage);
 
-			atacante.setAttack(atacante.getAttack() * movimiento.getChnAtkYou());
-			atacante.setSpAttack(atacante.getSpAttack() * movimiento.getChnSpAtkYou());
-			atacante.setDefence(atacante.getDefence() * movimiento.getChnDefYou());
-			atacante.setSpDefence(atacante.getSpDefence() * movimiento.getChnSpDefYou());
-			atacante.setSpeed(atacante.getSpeed() * movimiento.getChnSpeYou());
-
-			rival.setAttack(rival.getAttack() * movimiento.getChnAtkRiv());
-			rival.setSpAttack(rival.getSpAttack() * movimiento.getChnSpAtkRiv());
-			rival.setDefence(rival.getDefence() * movimiento.getChnDefRiv());
-			rival.setSpDefence(rival.getSpDefence() * movimiento.getChnSpDefRiv());
-			rival.setSpeed(rival.getSpeed() * movimiento.getChnSpeRiv());
 		}
 	}
+
+	private void applyStatus(Pokemon atacante, Pokemon rival, AbstractMove movimiento) {
+		this.condArena = movimiento.getAplicaCondArena();
+
+		atacante.setAttack(atacante.getAttack() * movimiento.getChnAtkYou());
+		atacante.setSpAttack(atacante.getSpAttack() * movimiento.getChnSpAtkYou());
+		atacante.setDefence(atacante.getDefence() * movimiento.getChnDefYou());
+		atacante.setSpDefence(atacante.getSpDefence() * movimiento.getChnSpDefYou());
+		atacante.setSpeed(atacante.getSpeed() * movimiento.getChnSpeYou());
+
+		rival.setAttack(rival.getAttack() * movimiento.getChnAtkRiv());
+		rival.setSpAttack(rival.getSpAttack() * movimiento.getChnSpAtkRiv());
+		rival.setDefence(rival.getDefence() * movimiento.getChnDefRiv());
+		rival.setSpDefence(rival.getSpDefence() * movimiento.getChnSpDefRiv());
+		rival.setSpeed(rival.getSpeed() * movimiento.getChnSpeRiv());
+	}
+
+	private void applyCondPosiPkmn(ArrayList<Pokemon> equipo, Pokemon atacante, AbstractMove movimiento,
+			Pokemon rival) {
+		switch (movimiento.getAplicaCondPosiPkmn()) {
+		case Proteccion:
+			break;
+
+		case Velo_Magico:
+			break;
+
+		default:
+		}
+	}
+
+	private void condArenaBeforeCalc(AbstractMove movimiento) {
+		switch (this.condArena) {
+		// Falta, y mucho
+		case Soleado:
+			switch (movimiento.getTipo()) {
+			case Fuego:
+				movimiento.setDamage((int) (movimiento.getDamage() * 1.5));
+				break;
+
+			case Agua:
+				movimiento.setDamage((int) (movimiento.getDamage() * 0.5));
+				break;
+
+			default:
+			}
+
+		default:
+		}
+	}
+
+	private void condArenaAfterCalc(ArrayList<Pokemon> combatientes) {
+		switch (this.condArena) {
+		case Soleado:
+			for (Pokemon pokemon : combatientes) {
+				if (pokemon.getEstado() == Estado.Congelado) {
+					pokemon.setEstado(Estado.Ninguno);
+				}
+			}
+			break;
+
+		default:
+		}
+	}
+
+	/*
+	 * Pinchos, proteccion, etc.
+	 */
+//	private void condPosiPkmnEntrada() {
+//case Pinchos_Venenosos:
+//case Pinchos:
+//	break;
+//
+//case Piedras_Afiladas:
+//	break;
+//
+//case Tela_Arana:
+//	break;
+//
+//case Acero_Afilado:
+//	break;
+//	}
 
 	private void chargeMove(AbstractMove movimiento) {
 		switch (movimiento.getMove()) {
@@ -496,7 +539,7 @@ public class Combate {
 			case Flamethrower:
 				if (((int) (Math.random() * 101)) <= 10) {
 					rival.setEstado(Estado.Quemado);
-					rival.setTurnosEstado(999999);
+					rival.setTurnosEstado(20);
 				}
 				break;
 
@@ -504,7 +547,7 @@ public class Combate {
 				if (((int) (Math.random() * 2)) == 0) {
 					if (((int) (Math.random() * 101)) <= 10) {
 						rival.setEstado(Estado.Quemado);
-						rival.setTurnosEstado(999999);
+						rival.setTurnosEstado(20);
 					}
 				} else {
 					if (((int) (Math.random() * 101)) <= 30) {
@@ -517,7 +560,7 @@ public class Combate {
 			case Blaze_Kick:
 				if (((int) (Math.random() * 101)) <= 10) {
 					rival.setEstado(Estado.Quemado);
-					rival.setTurnosEstado(999999);
+					rival.setTurnosEstado(20);
 				}
 				break;
 
@@ -598,10 +641,26 @@ public class Combate {
 		if (objetivo instanceof MoveAtk) {
 			return new MoveAtk(objetivo.getAplicaEstado(), objetivo.getTipo(), objetivo.getClase(), objetivo.getMove(),
 					objetivo.getNombre(), objetivo.getDescripcion(), objetivo.getMaxPP(), objetivo.getDamage(),
-					objetivo.getPrecision(), objetivo.getGolpesMin(), objetivo.getGolpesMax(), objetivo.getChnAtkYou(),
-					objetivo.getChnAtkRiv(), objetivo.getChnSpAtkYou(), objetivo.getChnSpAtkRiv(),
-					objetivo.getChnDefYou(), objetivo.getChnDefRiv(), objetivo.getChnSpDefYou(),
-					objetivo.getChnSpDefRiv(), objetivo.getChnSpeYou(), objetivo.getChnSpeRiv());
+					objetivo.getPrecision(), objetivo.getChnAtkYou(), objetivo.getChnAtkRiv(),
+					objetivo.getChnSpAtkYou(), objetivo.getChnSpAtkRiv(), objetivo.getChnDefYou(),
+					objetivo.getChnDefRiv(), objetivo.getChnSpDefYou(), objetivo.getChnSpDefRiv(),
+					objetivo.getChnSpeYou(), objetivo.getChnSpeRiv());
+		} else if (objetivo instanceof MoveAtkMulti) {
+			return new MoveAtkMulti(objetivo.getAplicaEstado(), objetivo.getTipo(), objetivo.getClase(),
+					objetivo.getMove(), objetivo.getNombre(), objetivo.getDescripcion(), objetivo.getMaxPP(),
+					objetivo.getDamage(), objetivo.getPrecision(), ((MoveAtkMulti) objetivo).getGolpesMin(),
+					((MoveAtkMulti) objetivo).getGolpesMax(), objetivo.getChnAtkYou(), objetivo.getChnAtkRiv(),
+					objetivo.getChnSpAtkYou(), objetivo.getChnSpAtkRiv(), objetivo.getChnDefYou(),
+					objetivo.getChnDefRiv(), objetivo.getChnSpDefYou(), objetivo.getChnSpDefRiv(),
+					objetivo.getChnSpeYou(), objetivo.getChnSpeRiv());
+		} else if (objetivo instanceof MoveAtkCarga) {
+			return new MoveAtkCarga(objetivo.getAplicaEstado(), objetivo.getTipo(), objetivo.getClase(),
+					objetivo.getMove(), objetivo.getNombre(), objetivo.getDescripcion(), objetivo.getMaxPP(),
+					objetivo.getDamage(), objetivo.getPrecision(), ((MoveAtkCarga) objetivo).getTurnosNecesarios(),
+					objetivo.getChnAtkYou(), objetivo.getChnAtkRiv(), objetivo.getChnSpAtkYou(),
+					objetivo.getChnSpAtkRiv(), objetivo.getChnDefYou(), objetivo.getChnDefRiv(),
+					objetivo.getChnSpDefYou(), objetivo.getChnSpDefRiv(), objetivo.getChnSpeYou(),
+					objetivo.getChnSpeRiv());
 		} else {
 			return new MoveStatus(objetivo.getAplicaEstado(), objetivo.getAplicaCondArena(),
 					objetivo.getAplicaCondPosiPkmn(), objetivo.getTipo(), objetivo.getClase(), objetivo.getMove(),
@@ -661,28 +720,6 @@ public class Combate {
 
 		default:
 		}
-	}
-
-	private void condArenaBeforeCalc(ArrayList<Pokemon> combatientes) {
-		switch (this.condArena) {
-		case Soleado:
-			break;
-
-		default:
-		}
-	}
-
-	private void condArenaAfterCalc(ArrayList<Pokemon> combatientes) {
-		switch (this.condArena) {
-		case Soleado:
-			break;
-
-		default:
-		}
-	}
-
-	private void condPosiPkmn() {
-
 	}
 
 	private boolean isFinished() {
