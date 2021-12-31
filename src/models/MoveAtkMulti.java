@@ -1,6 +1,7 @@
 package models;
 
 import models.TipoPokemon.Tipo;
+import utils.CondPosiPkmn;
 import utils.Estado;
 import utils.Moves;
 
@@ -13,6 +14,8 @@ public class MoveAtkMulti extends MoveAtk {
 	 * 
 	 * @param aplicaEstado Enum 'Estado' que representa el estado que se aplica al
 	 *                     objeto 'Pokemon'
+	 * @param condPosiPkmn Enum 'CondPosiPkmn' que representa la condición que se
+	 *                     aplica al objeto 'Pokemon'
 	 * @param tipo         Enum 'TipoPokemon.Tipo' que representa el tipo del
 	 *                     movimiento
 	 * @param clase        Enum 'AbstractMove.Clase' que representa si el movimiento
@@ -24,6 +27,7 @@ public class MoveAtkMulti extends MoveAtk {
 	 * @param maxPP        Entero que representa los max PP del movimiento
 	 * @param damage       Entero que representa el daño (power) del movimiento
 	 * @param precision    Entero que representa la precision del movimiento
+	 * @param prioridad    Entero que representa la prioridad del movimiento
 	 * @param golpesMin    Entero que representa la cantidad minima de golpes que
 	 *                     realiza el movimiento
 	 * @param golpesMax    Entero que representa la cantidad maxima de golpes que
@@ -49,12 +53,13 @@ public class MoveAtkMulti extends MoveAtk {
 	 * @param chnSpeRiv    Entero que representa cuantos niveles cambia a la
 	 *                     velocidad del rival (0, 1, 2, 3)
 	 */
-	public MoveAtkMulti(Estado aplicaEstado, Tipo tipo, Clase clase, Moves move, String nombre, String descripcion,
-			int maxPP, int damage, int precision, int golpesMin, int golpesMax, int chnAtkYou, int chnAtkRiv,
-			int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv,
-			int chnSpeYou, int chnSpeRiv) {
-		super(aplicaEstado, tipo, clase, move, nombre, descripcion, maxPP, damage, precision, chnAtkYou, chnAtkRiv,
-				chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv, chnSpeYou, chnSpeRiv);
+	public MoveAtkMulti(Estado aplicaEstado, CondPosiPkmn condPosiPkmn, Tipo tipo, Clase clase, Moves move,
+			String nombre, String descripcion, int maxPP, int damage, int precision, int prioridad, int golpesMin,
+			int golpesMax, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv,
+			int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
+		super(aplicaEstado, condPosiPkmn, tipo, clase, move, nombre, descripcion, maxPP, damage, precision, prioridad,
+				chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv,
+				chnSpeYou, chnSpeRiv);
 		this.golpesMin = golpesMin;
 		this.golpesMax = golpesMax;
 	}

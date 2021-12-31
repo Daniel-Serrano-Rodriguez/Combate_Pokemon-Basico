@@ -18,8 +18,8 @@ public abstract class AbstractMove implements Cloneable {
 	private Clase clase;
 	private Moves move;
 	private String nombre, descripcion;
-	private int maxPP, actPP, damage, precision, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv,
-			chnSpAtkYou, chnSpAtkRiv, chnSpDefYou, chnSpDefRiv, chnSpeYou, chnSpeRiv;
+	private int maxPP, actPP, damage, precision, prioridad, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou,
+			chnSpAtkRiv, chnSpDefYou, chnSpDefRiv, chnSpeYou, chnSpeRiv;
 
 	/**
 	 * Constructor del objeto 'AbstractMove'
@@ -44,11 +44,8 @@ public abstract class AbstractMove implements Cloneable {
 	 *                           movimiento
 	 * @param damage             Entero que representa el daño (power) del
 	 *                           movimiento
-	 * @param golpesMin          Entero que representa la cantidad minima de golpes
-	 *                           que realiza el movimiento
-	 * @param golpesMax          Entero que representa la cantidad maxima de golpes
-	 *                           que realiza el movimiento
 	 * @param precision          Entero que representa la precision del movimiento
+	 * @param prioridad          Entero que representa la prioridad del movimiento
 	 * @param chnAtkYou          Entero que representa cuantos niveles cambia a tu
 	 *                           ataque (0, 1, 2, 3)
 	 * @param chnAtkRiv          Entero que representa cuantos niveles cambia al
@@ -71,9 +68,9 @@ public abstract class AbstractMove implements Cloneable {
 	 *                           velocidad del rival (0, 1, 2, 3)
 	 */
 	protected AbstractMove(Estado aplicaEstado, CondArena aplicaCondArena, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
-			Clase clase, Moves move, String nombre, String descripcion, int maxPP, int damage, int precision,
-			int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou,
-			int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
+			Clase clase, Moves move, String nombre, String descripcion, int maxPP, int damage, int precision, int prioridad,
+			int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv,
+			int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
 		super();
 		this.aplicaEstado = aplicaEstado;
 		this.aplicaCondArena = aplicaCondArena;
@@ -86,7 +83,8 @@ public abstract class AbstractMove implements Cloneable {
 		this.maxPP = maxPP;
 		this.actPP = maxPP;
 		this.damage = damage;
-		this.precision = 100;
+		this.precision = precision;
+		this.prioridad = prioridad;
 		this.chnAtkYou = chnAtkYou;
 		this.chnAtkRiv = chnAtkRiv;
 		this.chnDefYou = chnDefYou;
@@ -198,6 +196,14 @@ public abstract class AbstractMove implements Cloneable {
 
 	protected void setPrecision(int precision) {
 		this.precision = precision;
+	}
+
+	protected int getPrioridad() {
+		return prioridad;
+	}
+
+	protected void setPrioridad(int prioridad) {
+		this.prioridad = prioridad;
 	}
 
 	protected int getChnAtkYou() {

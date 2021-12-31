@@ -27,6 +27,7 @@ public class MoveStatus extends AbstractMove {
 	 *                           movimiento, QUE SEA PEQUEÑA (E.g. Hace 20 puntos de
 	 *                           frio)
 	 * @param precision          Entero que representa la precision del movimiento
+	 * @param prioridad          Entero que representa la prioridad del movimiento
 	 * @param maxPP              Entero que representa los max PP del movimiento
 	 * @param actPP              Entero que representa los PP actuales del
 	 *                           movimiento
@@ -52,11 +53,11 @@ public class MoveStatus extends AbstractMove {
 	 *                           velocidad del rival (0, 1, 2, 3)
 	 */
 	public MoveStatus(Estado aplicaEstado, CondArena aplicaCondArena, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
-			Clase clase, Moves move, String nombre, String descripcion, int maxPP, int precision, int chnAtkYou,
-			int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou,
-			int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
+			Clase clase, Moves move, String nombre, String descripcion, int maxPP, int precision, int prioridad,
+			int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv,
+			int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
 		super(aplicaEstado, aplicaCondArena, aplicaCondPosiPkmn, tipo, clase, move, nombre, descripcion, maxPP, 0,
-				precision, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou,
+				precision, prioridad, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou, chnSpAtkRiv, chnSpDefYou,
 				chnSpDefRiv, chnSpeYou, chnSpeRiv);
 	}
 
