@@ -6,7 +6,7 @@ import utils.CondPosiPkmn;
 import utils.Estado;
 import utils.Moves;
 
-public abstract class AbstractMove implements Cloneable {
+public class Move implements Cloneable {
 	protected enum Clase {
 		Fisico, Especial, Estado
 	}
@@ -18,11 +18,22 @@ public abstract class AbstractMove implements Cloneable {
 	private Clase clase;
 	private Moves move;
 	private String nombre, descripcion;
-	private int maxPP, actPP, damage, precision, prioridad, chnAtkYou, chnAtkRiv, chnDefYou, chnDefRiv, chnSpAtkYou,
-			chnSpAtkRiv, chnSpDefYou, chnSpDefRiv, chnSpeYou, chnSpeRiv;
+	private int maxPP, actPP, damage, precision, prioridad;
+	private int golpesMin, golpesMax;
+	private int turnosNecesarios, turnosCargados;
+	private int chnAtkYou;
+	private int chnAtkRiv;
+	private int chnDefYou;
+	private int chnDefRiv;
+	private int chnSpAtkYou;
+	private int chnSpAtkRiv;
+	private int chnSpDefYou;
+	private int chnSpDefRiv;
+	private int chnSpeYou;
+	private int chnSpeRiv;
 
 	/**
-	 * Constructor del objeto 'AbstractMove'
+	 * Constructor de un ataque normal
 	 * 
 	 * @param aplicaEstado       Enum 'Estado' que representa el estado que se
 	 *                           aplica al objeto 'Pokemon'
@@ -67,13 +78,13 @@ public abstract class AbstractMove implements Cloneable {
 	 * @param chnSpeRiv          Entero que representa cuantos niveles cambia a la
 	 *                           velocidad del rival (0, 1, 2, 3)
 	 */
-	protected AbstractMove(Estado aplicaEstado, CondArena aplicaCondArena, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
-			Clase clase, Moves move, String nombre, String descripcion, int maxPP, int damage, int precision, int prioridad,
-			int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv,
+	protected Move(Estado aplicaEstado, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
+			Clase clase, Moves move, String nombre, String descripcion, int maxPP, int damage, int precision,
+			int prioridad, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv,
 			int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
 		super();
 		this.aplicaEstado = aplicaEstado;
-		this.aplicaCondArena = aplicaCondArena;
+		this.aplicaCondArena = CondArena.Ninguno;
 		this.aplicaCondPosiPkmn = aplicaCondPosiPkmn;
 		this.tipo = tipo;
 		this.clase = clase;
@@ -85,6 +96,10 @@ public abstract class AbstractMove implements Cloneable {
 		this.damage = damage;
 		this.precision = precision;
 		this.prioridad = prioridad;
+		this.golpesMin = 1;
+		this.golpesMax = 1;
+		this.turnosNecesarios = 1;
+		this.turnosCargados = 1;
 		this.chnAtkYou = chnAtkYou;
 		this.chnAtkRiv = chnAtkRiv;
 		this.chnDefYou = chnDefYou;
@@ -97,9 +112,248 @@ public abstract class AbstractMove implements Cloneable {
 		this.chnSpeRiv = chnSpeRiv;
 	}
 
-	private AbstractMove() {
+	/**
+	 * Constructor de un ataque de estado
+	 * 
+	 * @param aplicaEstado       Enum 'Estado' que representa el estado que se
+	 *                           aplica al objeto 'Pokemon'
+	 * @param aplicaCondArena    Enum 'CondArena' que representa la condición
+	 *                           atmosférica que se aplica al objeto 'Combate'
+	 * @param aplicaCondPosiPkmn Enum 'CondPosiPkmn' que representa el estado que se
+	 *                           aplica al objeto 'Pokemon' combatiendo actualmente
+	 * @param tipo               Enum 'TipoPokemon.Tipo' que representa el tipo del
+	 *                           movimiento
+	 * @param clase              Enum 'AbstractMove.Clase' que representa si el
+	 *                           movimiento es Fisico o Especial
+	 * @param move               Enum que representa el movimiento
+	 * @param nombre             String que representa el nombre del movimiento
+	 * @param descripcion        String que representa la descripcion del
+	 *                           movimiento, QUE SEA PEQUEÑA (E.g. Hace 20 puntos de
+	 *                           frio)
+	 * @param maxPP              Entero que representa los max PP del movimiento
+	 * @param actPP              Entero que representa los PP actuales del
+	 *                           movimiento
+	 * @param damage             Entero que representa el daño (power) del
+	 *                           movimiento
+	 * @param precision          Entero que representa la precision del movimiento
+	 * @param prioridad          Entero que representa la prioridad del movimiento
+	 * @param chnAtkYou          Entero que representa cuantos niveles cambia a tu
+	 *                           ataque (0, 1, 2, 3)
+	 * @param chnAtkRiv          Entero que representa cuantos niveles cambia al
+	 *                           ataque del rival (0, 1, 2, 3)
+	 * @param chnDefYou          Entero que representa cuantos niveles cambia a tu
+	 *                           defensa (0, 1, 2, 3)
+	 * @param chnDefRiv          Entero que representa cuantos niveles cambia a la
+	 *                           defensa del rival (0, 1, 2, 3)
+	 * @param chnSpAtkYou        Entero que representa cuantos niveles cambia a tu
+	 *                           ataque especial (0, 1, 2, 3)
+	 * @param chnSpAtkRiv        Entero que representa cuantos niveles cambia al
+	 *                           ataque especial del rival (0, 1, 2, 3)
+	 * @param chnSpDefYou        Entero que representa cuantos niveles cambia a tu
+	 *                           defensa especial (0, 1, 2, 3)
+	 * @param chnSpDefRiv        Entero que representa cuantos niveles cambia a la
+	 *                           defensa especial del rival (0, 1, 2, 3)
+	 * @param chnSpeYou          Entero que representa cuantos niveles cambia a tu
+	 *                           velocidad (0, 1, 2, 3)
+	 * @param chnSpeRiv          Entero que representa cuantos niveles cambia a la
+	 *                           velocidad del rival (0, 1, 2, 3)
+	 */
+	protected Move(Estado aplicaEstado, CondArena aplicaCondArena, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
+			Clase clase, Moves move, String nombre, String descripcion, int maxPP, int precision, int prioridad,
+			int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv,
+			int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
+		this.aplicaEstado = aplicaEstado;
+		this.aplicaCondArena = aplicaCondArena;
+		this.aplicaCondPosiPkmn = aplicaCondPosiPkmn;
+		this.tipo = tipo;
+		this.clase = clase;
+		this.move = move;
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.maxPP = maxPP;
+		this.actPP = maxPP;
+		this.damage = 0;
+		this.precision = precision;
+		this.prioridad = prioridad;
+		this.golpesMin = 1;
+		this.golpesMax = 1;
+		this.turnosNecesarios = 1;
+		this.turnosCargados = 1;
+		this.chnAtkYou = chnAtkYou;
+		this.chnAtkRiv = chnAtkRiv;
+		this.chnDefYou = chnDefYou;
+		this.chnDefRiv = chnDefRiv;
+		this.chnSpAtkYou = chnSpAtkYou;
+		this.chnSpAtkRiv = chnSpAtkRiv;
+		this.chnSpDefYou = chnSpDefYou;
+		this.chnSpDefRiv = chnSpDefRiv;
+		this.chnSpeYou = chnSpeYou;
+		this.chnSpeRiv = chnSpeRiv;
+	}
+
+	/**
+	 * Constructor de un ataque de multiples golpes
+	 * 
+	 * @param aplicaEstado       Enum 'Estado' que representa el estado que se
+	 *                           aplica al objeto 'Pokemon'
+	 * @param aplicaCondArena    Enum 'CondArena' que representa la condición
+	 *                           atmosférica que se aplica al objeto 'Combate'
+	 * @param aplicaCondPosiPkmn Enum 'CondPosiPkmn' que representa el estado que se
+	 *                           aplica al objeto 'Pokemon' combatiendo actualmente
+	 * @param tipo               Enum 'TipoPokemon.Tipo' que representa el tipo del
+	 *                           movimiento
+	 * @param clase              Enum 'AbstractMove.Clase' que representa si el
+	 *                           movimiento es Fisico o Especial
+	 * @param move               Enum que representa el movimiento
+	 * @param nombre             String que representa el nombre del movimiento
+	 * @param descripcion        String que representa la descripcion del
+	 *                           movimiento, QUE SEA PEQUEÑA (E.g. Hace 20 puntos de
+	 *                           frio)
+	 * @param maxPP              Entero que representa los max PP del movimiento
+	 * @param actPP              Entero que representa los PP actuales del
+	 *                           movimiento
+	 * @param damage             Entero que representa el daño (power) del
+	 *                           movimiento
+	 * @param precision          Entero que representa la precision del movimiento
+	 * @param prioridad          Entero que representa la prioridad del movimiento
+	 * @param chnAtkYou          Entero que representa cuantos niveles cambia a tu
+	 *                           ataque (0, 1, 2, 3)
+	 * @param chnAtkRiv          Entero que representa cuantos niveles cambia al
+	 *                           ataque del rival (0, 1, 2, 3)
+	 * @param chnDefYou          Entero que representa cuantos niveles cambia a tu
+	 *                           defensa (0, 1, 2, 3)
+	 * @param chnDefRiv          Entero que representa cuantos niveles cambia a la
+	 *                           defensa del rival (0, 1, 2, 3)
+	 * @param chnSpAtkYou        Entero que representa cuantos niveles cambia a tu
+	 *                           ataque especial (0, 1, 2, 3)
+	 * @param chnSpAtkRiv        Entero que representa cuantos niveles cambia al
+	 *                           ataque especial del rival (0, 1, 2, 3)
+	 * @param chnSpDefYou        Entero que representa cuantos niveles cambia a tu
+	 *                           defensa especial (0, 1, 2, 3)
+	 * @param chnSpDefRiv        Entero que representa cuantos niveles cambia a la
+	 *                           defensa especial del rival (0, 1, 2, 3)
+	 * @param chnSpeYou          Entero que representa cuantos niveles cambia a tu
+	 *                           velocidad (0, 1, 2, 3)
+	 * @param chnSpeRiv          Entero que representa cuantos niveles cambia a la
+	 *                           velocidad del rival (0, 1, 2, 3)
+	 */
+	protected Move(Estado aplicaEstado, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo, Clase clase, Moves move,
+			String nombre, String descripcion, int maxPP, int damage, int precision, int prioridad, int golpesMin,
+			int golpesMax, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv,
+			int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
 		super();
-	};
+		this.aplicaEstado = aplicaEstado;
+		this.aplicaCondArena = CondArena.Ninguno;
+		this.aplicaCondPosiPkmn = aplicaCondPosiPkmn;
+		this.tipo = tipo;
+		this.clase = clase;
+		this.move = move;
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.maxPP = maxPP;
+		this.actPP = maxPP;
+		this.damage = damage;
+		this.precision = precision;
+		this.prioridad = prioridad;
+		this.golpesMin = golpesMin;
+		this.golpesMax = golpesMax;
+		this.turnosNecesarios = 1;
+		this.turnosCargados = 1;
+		this.chnAtkYou = chnAtkYou;
+		this.chnAtkRiv = chnAtkRiv;
+		this.chnDefYou = chnDefYou;
+		this.chnDefRiv = chnDefRiv;
+		this.chnSpAtkYou = chnSpAtkYou;
+		this.chnSpAtkRiv = chnSpAtkRiv;
+		this.chnSpDefYou = chnSpDefYou;
+		this.chnSpDefRiv = chnSpDefRiv;
+		this.chnSpeYou = chnSpeYou;
+		this.chnSpeRiv = chnSpeRiv;
+	}
+
+	/**
+	 * Constructor de un ataque que requiere de carga
+	 * 
+	 * @param aplicaEstado       Enum 'Estado' que representa el estado que se
+	 *                           aplica al objeto 'Pokemon'
+	 * @param aplicaCondArena    Enum 'CondArena' que representa la condición
+	 *                           atmosférica que se aplica al objeto 'Combate'
+	 * @param aplicaCondPosiPkmn Enum 'CondPosiPkmn' que representa el estado que se
+	 *                           aplica al objeto 'Pokemon' combatiendo actualmente
+	 * @param tipo               Enum 'TipoPokemon.Tipo' que representa el tipo del
+	 *                           movimiento
+	 * @param clase              Enum 'AbstractMove.Clase' que representa si el
+	 *                           movimiento es Fisico o Especial
+	 * @param move               Enum que representa el movimiento
+	 * @param nombre             String que representa el nombre del movimiento
+	 * @param descripcion        String que representa la descripcion del
+	 *                           movimiento, QUE SEA PEQUEÑA (E.g. Hace 20 puntos de
+	 *                           frio)
+	 * @param maxPP              Entero que representa los max PP del movimiento
+	 * @param actPP              Entero que representa los PP actuales del
+	 *                           movimiento
+	 * @param damage             Entero que representa el daño (power) del
+	 *                           movimiento
+	 * @param precision          Entero que representa la precision del movimiento
+	 * @param prioridad          Entero que representa la prioridad del movimiento
+	 * @param chnAtkYou          Entero que representa cuantos niveles cambia a tu
+	 *                           ataque (0, 1, 2, 3)
+	 * @param chnAtkRiv          Entero que representa cuantos niveles cambia al
+	 *                           ataque del rival (0, 1, 2, 3)
+	 * @param chnDefYou          Entero que representa cuantos niveles cambia a tu
+	 *                           defensa (0, 1, 2, 3)
+	 * @param chnDefRiv          Entero que representa cuantos niveles cambia a la
+	 *                           defensa del rival (0, 1, 2, 3)
+	 * @param chnSpAtkYou        Entero que representa cuantos niveles cambia a tu
+	 *                           ataque especial (0, 1, 2, 3)
+	 * @param chnSpAtkRiv        Entero que representa cuantos niveles cambia al
+	 *                           ataque especial del rival (0, 1, 2, 3)
+	 * @param chnSpDefYou        Entero que representa cuantos niveles cambia a tu
+	 *                           defensa especial (0, 1, 2, 3)
+	 * @param chnSpDefRiv        Entero que representa cuantos niveles cambia a la
+	 *                           defensa especial del rival (0, 1, 2, 3)
+	 * @param chnSpeYou          Entero que representa cuantos niveles cambia a tu
+	 *                           velocidad (0, 1, 2, 3)
+	 * @param chnSpeRiv          Entero que representa cuantos niveles cambia a la
+	 *                           velocidad del rival (0, 1, 2, 3)
+	 */
+	protected Move(Estado aplicaEstado, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo, Clase clase, Moves move,
+			String nombre, String descripcion, int maxPP, int damage, int precision, int prioridad,
+			int turnosNecesarios, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou,
+			int chnSpAtkRiv, int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
+		super();
+		this.aplicaEstado = aplicaEstado;
+		this.aplicaCondArena = CondArena.Ninguno;
+		this.aplicaCondPosiPkmn = aplicaCondPosiPkmn;
+		this.tipo = tipo;
+		this.clase = clase;
+		this.move = move;
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.maxPP = maxPP;
+		this.actPP = maxPP;
+		this.damage = damage;
+		this.precision = precision;
+		this.prioridad = prioridad;
+		this.golpesMin = 1;
+		this.golpesMax = 1;
+		this.turnosNecesarios = turnosNecesarios;
+		this.turnosCargados = 1;
+		this.chnAtkYou = chnAtkYou;
+		this.chnAtkRiv = chnAtkRiv;
+		this.chnDefYou = chnDefYou;
+		this.chnDefRiv = chnDefRiv;
+		this.chnSpAtkYou = chnSpAtkYou;
+		this.chnSpAtkRiv = chnSpAtkRiv;
+		this.chnSpDefYou = chnSpDefYou;
+		this.chnSpDefRiv = chnSpDefRiv;
+		this.chnSpeYou = chnSpeYou;
+		this.chnSpeRiv = chnSpeRiv;
+	}
+
+	private Move() {
+
+	}
 
 	// Getters - Setters
 	protected Estado getAplicaEstado() {
@@ -202,6 +456,30 @@ public abstract class AbstractMove implements Cloneable {
 		return prioridad;
 	}
 
+	protected int getGolpesMin() {
+		return golpesMin;
+	}
+
+	protected void setGolpesMin(int golpesMin) {
+		this.golpesMin = golpesMin;
+	}
+
+	protected int getGolpesMax() {
+		return golpesMax;
+	}
+
+	protected int getTurnosNecesarios() {
+		return turnosNecesarios;
+	}
+
+	protected int getTurnosCargados() {
+		return turnosCargados;
+	}
+
+	protected void setTurnosCargados(int turnoCargado) {
+		this.turnosCargados = turnoCargado;
+	}
+
 	protected void setPrioridad(int prioridad) {
 		this.prioridad = prioridad;
 	}
@@ -287,9 +565,8 @@ public abstract class AbstractMove implements Cloneable {
 	}
 
 	// Methods
-	public Object copiarMove() {
-		AbstractMove move = new AbstractMove() {
-		};
+	protected Move copiarMove() {
+		Move move = new Move();
 		move.aplicaEstado = this.aplicaEstado;
 		move.aplicaCondArena = this.aplicaCondArena;
 		move.aplicaCondPosiPkmn = this.aplicaCondPosiPkmn;
@@ -301,6 +578,11 @@ public abstract class AbstractMove implements Cloneable {
 		move.maxPP = this.maxPP;
 		move.actPP = this.maxPP;
 		move.damage = this.damage;
+		move.prioridad = this.prioridad;
+		move.golpesMin = this.golpesMin;
+		move.golpesMax = this.golpesMax;
+		move.turnosNecesarios = this.turnosNecesarios;
+		move.turnosCargados = 1;
 		move.chnAtkYou = this.chnAtkYou;
 		move.chnAtkRiv = this.chnAtkRiv;
 		move.chnDefYou = this.chnDefYou;
@@ -956,5 +1238,4 @@ public abstract class AbstractMove implements Cloneable {
 			return 1;
 		}
 	}
-
 }

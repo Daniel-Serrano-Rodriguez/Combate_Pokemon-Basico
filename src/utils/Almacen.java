@@ -2,13 +2,13 @@ package utils;
 
 import java.util.ArrayList;
 
-import models.AbstractMove;
+import models.Move;
 import models.Pokemon;
 import models.TipoPokemon.Tipo;
 
 public class Almacen {
 	public static ArrayList<Pokemon> almacenPokemon = new ArrayList<Pokemon>();
-	public static ArrayList<AbstractMove> almacenMovimientos = new ArrayList<AbstractMove>();
+	public static ArrayList<Move> almacenMovimientos = new ArrayList<Move>();
 
 	public static void mostrarPokemons() {
 		for (int i = 0; i < almacenPokemon.size(); i++) {

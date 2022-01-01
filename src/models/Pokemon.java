@@ -10,7 +10,7 @@ import utils.Estado;
 public class Pokemon implements Cloneable {
 	private Tipo tipo1, tipo2;
 	private Estado estado;
-	private ArrayList<AbstractMove> movimientos;
+	private ArrayList<Move> movimientos;
 	private ArrayList<CondPosiPkmn> pkmnCond;
 	private ArrayList<Integer> durPkmnCond;
 	private Entrenador entrenador;
@@ -51,7 +51,7 @@ public class Pokemon implements Cloneable {
 		this.tipo1 = tipo1;
 		this.tipo2 = tipo2;
 		this.estado = estado;
-		this.movimientos = new ArrayList<AbstractMove>();
+		this.movimientos = new ArrayList<Move>();
 		this.pkmnCond = new ArrayList<CondPosiPkmn>();
 		this.durPkmnCond = new ArrayList<Integer>();
 		this.entrenador = null;
@@ -100,7 +100,7 @@ public class Pokemon implements Cloneable {
 		this.estado = estado;
 	}
 
-	public ArrayList<AbstractMove> getMovimientos() {
+	public ArrayList<Move> getMovimientos() {
 		return movimientos;
 	}
 
@@ -110,22 +110,41 @@ public class Pokemon implements Cloneable {
 
 	protected void addPkmnCond(CondPosiPkmn pkmnCond) {
 		this.pkmnCond.add(pkmnCond);
+		this.durPkmnCond.add(-1);
 	}
 
 	protected void removePkmnCond(CondPosiPkmn pkmnCond) {
 		this.pkmnCond.remove(pkmnCond);
 	}
 
+	protected boolean hasCond(CondPosiPkmn pkmnCond) {
+		for (int i = 0; i < this.pkmnCond.size(); i++) {
+			if (this.pkmnCond.get(i) == pkmnCond) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected int getPosiCond(CondPosiPkmn pkmnCond) {
+		for (int i = 0; i < this.pkmnCond.size(); i++) {
+			if (this.pkmnCond.get(i) == pkmnCond) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	protected ArrayList<Integer> getDurPkmnCond() {
 		return durPkmnCond;
 	}
 
-	protected void addDurPkmnCond(int durPkmnCond) {
-		this.durPkmnCond.add(durPkmnCond);
+	protected void setDurPkmnCond(int posi, int durPkmnCond) {
+		this.durPkmnCond.set(posi, durPkmnCond);
 	}
 
-	protected void setDurPkmnCond(int posi, Integer durPkmnCond) {
-		this.durPkmnCond.set(posi, durPkmnCond);
+	protected int getDurPosiPkmnCond(int posi) {
+		return this.durPkmnCond.get(posi);
 	}
 
 	protected void removeDurPkmnCond(int posi) {
@@ -296,7 +315,7 @@ public class Pokemon implements Cloneable {
 		System.out.println("\n");
 	}
 
-	public AbstractMove elegirMovimiento() {
+	public Move elegirMovimiento() {
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
 		int move;
@@ -319,7 +338,7 @@ public class Pokemon implements Cloneable {
 		return null;
 	}
 
-	public void aprenderMovimiento(AbstractMove aprender) {
+	public void aprenderMovimiento(Move movimiento) {
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
 		int move, opc;
@@ -347,7 +366,7 @@ public class Pokemon implements Cloneable {
 						System.out.println("\n\nElige un numero valido\n");
 					} else if (opc == 1) {
 						elegido = true;
-						this.movimientos.add(move, aprender);
+						this.movimientos.add(move, movimiento);
 						this.movimientos.remove(move - 1);
 					} else {
 						elegido = false;
@@ -355,7 +374,7 @@ public class Pokemon implements Cloneable {
 				}
 			} while (!elegido);
 		} else {
-			this.movimientos.add(aprender);
+			this.movimientos.add(movimiento);
 		}
 	}
 
@@ -365,7 +384,7 @@ public class Pokemon implements Cloneable {
 		poke.tipo1 = this.tipo1;
 		poke.tipo2 = this.tipo2;
 		poke.estado = this.estado;
-		poke.movimientos = (ArrayList<AbstractMove>) this.movimientos.clone();
+		poke.movimientos = (ArrayList<Move>) this.movimientos.clone();
 		poke.pkmnCond = (ArrayList<CondPosiPkmn>) this.pkmnCond.clone();
 		poke.durPkmnCond = (ArrayList<Integer>) this.durPkmnCond.clone();
 		poke.entrenador = null;
