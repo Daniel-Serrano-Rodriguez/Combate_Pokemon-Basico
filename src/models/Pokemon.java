@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import models.TipoPokemon.Tipo;
+import utils.CondPosiPkmn;
 import utils.Estado;
 
 public class Pokemon implements Cloneable {
 	private Tipo tipo1, tipo2;
 	private Estado estado;
 	private ArrayList<AbstractMove> movimientos;
+	private ArrayList<CondPosiPkmn> pkmnCond;
+	private ArrayList<Integer> durPkmnCond;
 	private Entrenador entrenador;
 	private String nombre;
 	private int maxHP, actualHp, numero, level, attack, defence, spAttack, spDefence, speed, idPelea, turnosEstado,
@@ -32,9 +35,9 @@ public class Pokemon implements Cloneable {
 	 * @param estado    Enum 'Estado' que representa el estado que tiene aplicado el
 	 *                  Pokemon
 	 * @param nombre    String que representa el nombre del Pokemon
-	 * @param maxHP     Entero que representa la vida maxima del Pokemon
 	 * @param numero    Entero que representa el numero de la Pokedex del Pokemon
 	 * @param level     Entero que representa el nivel del Pokemon
+	 * @param maxHP     Entero que representa la vida maxima del Pokemon
 	 * @param attack    Entero que representa la potencia de ataque del Pokemon
 	 * @param defence   Entero que representa la defensa del Pokemon
 	 * @param spAttack  Entero que representa la potencia de ataque especial del
@@ -49,6 +52,8 @@ public class Pokemon implements Cloneable {
 		this.tipo2 = tipo2;
 		this.estado = estado;
 		this.movimientos = new ArrayList<AbstractMove>();
+		this.pkmnCond = new ArrayList<CondPosiPkmn>();
+		this.durPkmnCond = new ArrayList<Integer>();
 		this.entrenador = null;
 		this.nombre = nombre;
 		this.maxHP = maxHP;
@@ -97,6 +102,34 @@ public class Pokemon implements Cloneable {
 
 	public ArrayList<AbstractMove> getMovimientos() {
 		return movimientos;
+	}
+
+	protected ArrayList<CondPosiPkmn> getPkmnCond() {
+		return pkmnCond;
+	}
+
+	protected void addPkmnCond(CondPosiPkmn pkmnCond) {
+		this.pkmnCond.add(pkmnCond);
+	}
+
+	protected void removePkmnCond(CondPosiPkmn pkmnCond) {
+		this.pkmnCond.remove(pkmnCond);
+	}
+
+	protected ArrayList<Integer> getDurPkmnCond() {
+		return durPkmnCond;
+	}
+
+	protected void addDurPkmnCond(int durPkmnCond) {
+		this.durPkmnCond.add(durPkmnCond);
+	}
+
+	protected void setDurPkmnCond(int posi, Integer durPkmnCond) {
+		this.durPkmnCond.set(posi, durPkmnCond);
+	}
+
+	protected void removeDurPkmnCond(int posi) {
+		this.durPkmnCond.remove(posi);
 	}
 
 	protected Entrenador getEntrenador() {
@@ -333,6 +366,8 @@ public class Pokemon implements Cloneable {
 		poke.tipo2 = this.tipo2;
 		poke.estado = this.estado;
 		poke.movimientos = (ArrayList<AbstractMove>) this.movimientos.clone();
+		poke.pkmnCond = (ArrayList<CondPosiPkmn>) this.pkmnCond.clone();
+		poke.durPkmnCond = (ArrayList<Integer>) this.durPkmnCond.clone();
 		poke.entrenador = null;
 		poke.nombre = this.nombre;
 		poke.maxHP = this.maxHP;

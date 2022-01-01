@@ -57,4 +57,14 @@ public class MoveAtk extends AbstractMove {
 				chnSpDefYou, chnSpDefRiv, chnSpeYou, chnSpeRiv);
 	}
 
+	public MoveAtk copiarMove(MoveAtk copiar) {
+		MoveAtk move = new MoveAtk(copiar.getAplicaEstado(), copiar.getAplicaCondPosiPkmn(), copiar.getTipo(),
+				copiar.getClase(), copiar.getMove(), copiar.getNombre(), copiar.getDescripcion(), copiar.getMaxPP(),
+				copiar.getDamage(), copiar.getPrecision(), copiar.getPrioridad(), copiar.getChnAtkYou(),
+				copiar.getChnAtkRiv(), copiar.getChnDefYou(), copiar.getChnDefRiv(), copiar.getChnSpAtkYou(),
+				copiar.getChnSpAtkRiv(), copiar.getChnSpDefYou(), copiar.getChnSpDefRiv(), copiar.getChnSpeYou(),
+				copiar.getChnSpeRiv());
+		return move;
+	}
+
 }

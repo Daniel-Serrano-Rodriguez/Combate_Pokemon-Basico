@@ -74,4 +74,14 @@ public class MoveAtkCarga extends MoveAtk {
 		this.turnosCargados = turnoCargado;
 	}
 
+	public MoveAtkCarga copiarMove(MoveAtkCarga copiar) {
+		MoveAtkCarga move = new MoveAtkCarga(copiar.getAplicaEstado(), copiar.getAplicaCondPosiPkmn(), copiar.getTipo(),
+				copiar.getClase(), copiar.getMove(), copiar.getNombre(), copiar.getDescripcion(), copiar.getMaxPP(),
+				copiar.getDamage(), copiar.getPrecision(), copiar.getPrioridad(), copiar.getTurnosNecesarios(),
+				copiar.getChnAtkYou(), copiar.getChnAtkRiv(), copiar.getChnDefYou(), copiar.getChnDefRiv(),
+				copiar.getChnSpAtkYou(), copiar.getChnSpAtkRiv(), copiar.getChnSpDefYou(), copiar.getChnSpDefRiv(),
+				copiar.getChnSpeYou(), copiar.getChnSpeRiv());
+		return move;
+	}
+
 }

@@ -76,4 +76,14 @@ public class MoveAtkMulti extends MoveAtk {
 		return golpesMax;
 	}
 
+	public MoveAtkMulti copiarMove(MoveAtkMulti copiar) {
+		MoveAtkMulti move = new MoveAtkMulti(copiar.getAplicaEstado(), copiar.getAplicaCondPosiPkmn(), copiar.getTipo(),
+				copiar.getClase(), copiar.getMove(), copiar.getNombre(), copiar.getDescripcion(), copiar.getMaxPP(),
+				copiar.getDamage(), copiar.getPrecision(), copiar.getPrioridad(), copiar.getGolpesMin(),
+				copiar.getGolpesMax(), copiar.getChnAtkYou(), copiar.getChnAtkRiv(), copiar.getChnDefYou(),
+				copiar.getChnDefRiv(), copiar.getChnSpAtkYou(), copiar.getChnSpAtkRiv(), copiar.getChnSpDefYou(),
+				copiar.getChnSpDefRiv(), copiar.getChnSpeYou(), copiar.getChnSpeRiv());
+		return move;
+	}
+
 }

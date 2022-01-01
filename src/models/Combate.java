@@ -9,14 +9,12 @@ import models.TipoPokemon.Tipo;
 import utils.CondArena;
 import utils.CondPosiPkmn;
 import utils.Estado;
-import utils.Moves;
 
 public class Combate {
 	private Entrenador entrenador1, entrenador2;
 	private ArrayList<Pokemon> pokemon1, pokemon2, combatientes;
 	private ArrayList<AbstractMove> chargedMoves = new ArrayList<AbstractMove>(), moves = new ArrayList<AbstractMove>();
 	private CondArena condArena;
-	private CondPosiPkmn condPoke1, condPoke2;
 
 	/**
 	 * Constructor del objeto 'Combate'. Se crean 2 arrayList vacios que representan
@@ -29,8 +27,6 @@ public class Combate {
 		this.pokemon2 = new ArrayList<Pokemon>();
 		this.combatientes = new ArrayList<Pokemon>();
 		this.condArena = CondArena.Ninguno;
-		this.condPoke1 = CondPosiPkmn.Ninguno;
-		this.condPoke2 = CondPosiPkmn.Ninguno;
 	}
 
 	/**
@@ -45,8 +41,6 @@ public class Combate {
 		this.pokemon2 = new ArrayList<Pokemon>();
 		this.combatientes = new ArrayList<Pokemon>();
 		this.condArena = CondArena.Ninguno;
-		this.condPoke1 = CondPosiPkmn.Ninguno;
-		this.condPoke2 = CondPosiPkmn.Ninguno;
 	}
 
 	// Getters - Setters
@@ -76,22 +70,6 @@ public class Combate {
 
 	protected void setCondArena(CondArena condArena) {
 		this.condArena = condArena;
-	}
-
-	protected CondPosiPkmn getCondPoke1() {
-		return condPoke1;
-	}
-
-	protected void setCondPoke1(CondPosiPkmn condPoke1) {
-		this.condPoke1 = condPoke1;
-	}
-
-	protected CondPosiPkmn getCondPoke2() {
-		return condPoke2;
-	}
-
-	protected void setCondPoke2(CondPosiPkmn condPoke2) {
-		this.condPoke2 = condPoke2;
 	}
 
 	// Methods
@@ -124,7 +102,7 @@ public class Combate {
 			}
 
 			setPkmnId(this.combatientes);
-
+			
 			System.out.println("\nTurno de " + this.entrenador1.getNombre());
 			for (Pokemon pkmn : this.entrenador1.getEquipo()) {
 				if (pkmn.getEstado() != Estado.Cargando) {
@@ -317,7 +295,8 @@ public class Combate {
 	}
 
 	public void ataque(ArrayList<Pokemon> equipo, Pokemon atacante, AbstractMove movimiento, Pokemon rival) {
-		int damage;
+		if (movimiento.getActPP() > 0)
+			movimiento.setActPP(movimiento.getActPP() - 1);
 
 		AbstractMove move = strangeMove(equipo, movimiento);
 		AbstractMove apoyo = (AbstractMove) movimiento.copiarMove();
@@ -326,9 +305,9 @@ public class Combate {
 		chargeMove(movimiento);
 		condArenaBeforeCalc(movimiento);
 
-		damage = calcDamage(atacante, rival, movimiento);
+		int damage = calcDamage(atacante, rival, movimiento);
 
-		applyDamage(atacante, rival, move, damage);
+		applyDamage(atacante, rival, damage);
 		applyStatus(atacante, rival, movimiento);
 		applyCondPosiPkmnBeforeCalc(equipo, atacante, movimiento, rival);
 
@@ -337,9 +316,14 @@ public class Combate {
 		recoilMove(atacante, movimiento, damage);
 
 		movimiento = (AbstractMove) apoyo.copiarMove();
+		System.out.println(movimiento.getNombre() + " ha hecho " + damage);
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		if (movimiento.getActPP() > 0)
-			movimiento.setActPP(movimiento.getActPP() - 1);
 	}
 
 	private int calcDamage(Pokemon atacante, Pokemon rival, AbstractMove movimiento) {
@@ -352,7 +336,7 @@ public class Combate {
 
 		default: {
 			double modTiempo = 1, random = 1, stab = 1, quemadura = 1, otro = 1;
-			double getRandom, efectividad;
+			double efectividad;
 			int crit;
 
 			switch (condArena) {
@@ -385,13 +369,13 @@ public class Combate {
 				crit = 1;
 			}
 
-			getRandom = (int) (Math.random() * 101);
+			random = (int) (Math.random() * 101);
 
-			if (getRandom <= 85) {
+			if (random <= 85) {
 				random = 85;
 			}
 
-			random /= 100;
+			random = random / 100;
 
 			if (movimiento.getTipo() == atacante.getTipo1()) {
 				stab = 1.5;
@@ -421,6 +405,8 @@ public class Combate {
 				} else {
 					return 0;
 				}
+			} else if (movimiento instanceof MoveStatus) {
+				return 0;
 			} else {
 				return attackDamage(atacante, rival, movimiento, modTiempo, crit, random, stab, efectividad, quemadura,
 						otro);
@@ -443,7 +429,7 @@ public class Combate {
 		}
 	}
 
-	private void applyDamage(Pokemon atacante, Pokemon rival, AbstractMove movimiento, int damage) {
+	private void applyDamage(Pokemon atacante, Pokemon rival, int damage) {
 		if (atacante.getEstado() == Estado.Confusion) {
 			if (((int) (Math.random() * 101)) <= 33) {
 				atacante.setActualHp(rival.getActualHp() - damage);
@@ -452,7 +438,6 @@ public class Combate {
 			}
 		} else {
 			rival.setActualHp(rival.getActualHp() - damage);
-
 		}
 	}
 
@@ -575,14 +560,14 @@ public class Combate {
 			case Bolt_Strike:
 				if (((int) (Math.random() * 101)) <= 20) {
 					rival.setEstado(Estado.Paralisis);
-					rival.setTurnosEstado(999999);
+					rival.setTurnosEstado(-1);
 				}
 				break;
 
 			case Spark:
 				if (((int) (Math.random() * 101)) <= 30) {
 					rival.setEstado(Estado.Paralisis);
-					rival.setTurnosEstado(999999);
+					rival.setTurnosEstado(-1);
 				}
 				break;
 
@@ -597,13 +582,13 @@ public class Combate {
 
 			case Thunder_Wave:
 				rival.setEstado(Estado.Paralisis);
-				rival.setTurnosEstado(999999);
+				rival.setTurnosEstado(-1);
 				break;
 
 			case Flamethrower:
 				if (((int) (Math.random() * 101)) <= 10) {
 					rival.setEstado(Estado.Quemado);
-					rival.setTurnosEstado(20);
+					rival.setTurnosEstado(-1);
 				}
 				break;
 
@@ -611,7 +596,7 @@ public class Combate {
 				if (((int) (Math.random() * 2)) == 0) {
 					if (((int) (Math.random() * 101)) <= 10) {
 						rival.setEstado(Estado.Quemado);
-						rival.setTurnosEstado(20);
+						rival.setTurnosEstado(-1);
 					}
 				} else {
 					if (((int) (Math.random() * 101)) <= 30) {
@@ -624,7 +609,7 @@ public class Combate {
 			case Blaze_Kick:
 				if (((int) (Math.random() * 101)) <= 10) {
 					rival.setEstado(Estado.Quemado);
-					rival.setTurnosEstado(20);
+					rival.setTurnosEstado(-1);
 				}
 				break;
 
@@ -637,19 +622,15 @@ public class Combate {
 			}
 		}
 
-		switch (movimiento.getAplicaCondPosiPkmn()) {
-		case Atrapado_Clamp:
-			if (rival.getDurPkmnStatus() > 0) {
-				rival.setCondPkmnStatus(CondPosiPkmn.Atrapado_Clamp);
-				turnos = (int) (Math.random() * 6);
-				if (turnos < 4)
-					turnos = 4;
-				rival.setDurPkmnStatus(turnos);
-			}
+		switch (movimiento.getMove()) {
+		case Clamp:
+			rival.addPkmnCond(CondPosiPkmn.Atrapado);
+			rival.addDurPkmnCond(-1);
 			break;
 
-		case Heal_1p16:
-			atacante.setCondPkmnStatus(CondPosiPkmn.Heal_1p16);
+		case Aqua_Ring:
+			atacante.addPkmnCond(CondPosiPkmn.Heal_1p16);
+			atacante.addDurPkmnCond(-1);
 			break;
 
 		default:
@@ -667,21 +648,16 @@ public class Combate {
 		default:
 		}
 
-		switch (rival.getCondPkmnStatus()) {
-		case Atrapado_Clamp:
-			rival.setActualHp(rival.getActualHp() - (rival.getMaxHP() / 8));
-			break;
+		if (atacante.getPkmnCond() != null)
+			for (CondPosiPkmn cond : atacante.getPkmnCond()) {
+				switch (cond) {
+				case Heal_1p16:
+					atacante.setActualHp(atacante.getActualHp() + (atacante.getMaxHP() / 16));
+					break;
 
-		default:
-		}
-
-		switch (atacante.getCondPkmnStatus()) {
-		case Heal_1p16:
-			atacante.setActualHp(atacante.getActualHp() + (atacante.getMaxHP() / 16));
-			break;
-
-		default:
-		}
+				default:
+				}
+			}
 	}
 
 	private void removePkmnStatus(Pokemon pokemon) {
@@ -691,12 +667,15 @@ public class Combate {
 			pokemon.setEstado(Estado.Ninguno);
 		}
 
-		if (pokemon.getDurPkmnStatus() > 0) {
-			pokemon.setDurPkmnStatus(0);
-		} else if (pokemon.getDurPkmnStatus() == 0) {
-			pokemon.setCondPkmnStatus(CondPosiPkmn.Ninguno);
-			;
-		}
+		if (pokemon.getPkmnCond() != null)
+			for (int i = 0; i < pokemon.getPkmnCond().size(); i++) {
+				if (pokemon.getDurPkmnCond().get(i) > 0) {
+					pokemon.setDurPkmnCond(i, pokemon.getDurPkmnCond().get(i) - 1);
+				} else if (pokemon.getDurPkmnCond().get(i) == 0) {
+					pokemon.removePkmnCond(pokemon.getPkmnCond().get(i));
+					pokemon.removeDurPkmnCond(i);
+				}
+			}
 
 		switch (pokemon.getEstado()) {
 		case Paralisis:
@@ -885,8 +864,16 @@ public class Combate {
 	private void setPkmnMoves(Pokemon pokemon) {
 		for (int i = 0; i < 4; i++) {
 			AbstractMove move;
-			move = (AbstractMove) utils.Almacen.almacenMovimientos
-					.get((int) (Math.random() * utils.Almacen.almacenMovimientos.size())).copiarMove();
+			int random = (int) (Math.random() * utils.Almacen.almacenMovimientos.size());
+			if (utils.Almacen.almacenMovimientos.get(random) instanceof MoveAtk) {
+				move = (AbstractMove) utils.Almacen.almacenMovimientos.get(random).copiarMove();
+			} else if (utils.Almacen.almacenMovimientos.get(random) instanceof MoveAtkCarga) {
+				move = (AbstractMove) utils.Almacen.almacenMovimientos.get(random).copiarMove();
+			} else if (utils.Almacen.almacenMovimientos.get(random) instanceof MoveAtkMulti) {
+				move = (AbstractMove) utils.Almacen.almacenMovimientos.get(random).copiarMove();
+			} else {
+				move = (AbstractMove) utils.Almacen.almacenMovimientos.get(random).copiarMove();
+			}
 			pokemon.aprenderMovimiento(move);
 		}
 	}
