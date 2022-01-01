@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import models.TipoPokemon.Tipo;
-import utils.CondPosiPkmn;
 import utils.Estado;
 
 public class Pokemon implements Cloneable {
 	private Tipo tipo1, tipo2;
 	private Estado estado;
 	private ArrayList<AbstractMove> movimientos;
-	private ArrayList<CondPosiPkmn> condPkmn;
-	private ArrayList<Integer> duracionCondPkmn;
 	private Entrenador entrenador;
 	private String nombre;
 	private int maxHP, actualHp, numero, level, attack, defence, spAttack, spDefence, speed, idPelea, turnosEstado,
@@ -51,12 +48,6 @@ public class Pokemon implements Cloneable {
 		this.tipo1 = tipo1;
 		this.tipo2 = tipo2;
 		this.estado = estado;
-		this.condPkmn = new ArrayList<CondPosiPkmn>();
-		this.condPkmn.add(CondPosiPkmn.Ninguno);
-		this.condPkmn.add(CondPosiPkmn.Ninguno);
-		this.duracionCondPkmn = new ArrayList<Integer>();
-		this.duracionCondPkmn.add(0);
-		this.duracionCondPkmn.add(0);
 		this.movimientos = new ArrayList<AbstractMove>();
 		this.entrenador = null;
 		this.nombre = nombre;
@@ -106,74 +97,6 @@ public class Pokemon implements Cloneable {
 
 	public ArrayList<AbstractMove> getMovimientos() {
 		return movimientos;
-	}
-
-	protected ArrayList<CondPosiPkmn> getCondPkmn() {
-		return condPkmn;
-	}
-
-	/**
-	 * Devuelve si el pokemon tiene Protección, Velo Magico, Anillo Agua, etc
-	 * 
-	 * @return Enum 'CondPosiPkmn'
-	 */
-	protected CondPosiPkmn getCondPkmnStatus() {
-		return condPkmn.get(1);
-	}
-
-	/**
-	 * Devuelve si el pokemon está atrapado, no puede huir, etc
-	 * 
-	 * @return Enum 'CondPosiPkmn'
-	 */
-	protected CondPosiPkmn getCondPkmnArena() {
-		return condPkmn.get(0);
-	}
-
-	/**
-	 * Le pone al Pokemon Protección, Velo Magico, Anillo Agua, etc
-	 */
-	protected void setCondPkmnStatus(CondPosiPkmn cond) {
-		this.condPkmn.set(1, cond);
-	}
-
-	/**
-	 * Pone al Pokemon atrapado, sin huida, etc
-	 */
-	protected void setCondPkmnArena(CondPosiPkmn cond) {
-		this.condPkmn.set(0, cond);
-	}
-
-	/**
-	 * Devuelve la duracion de Protección, Velo Magico, Anillo Agua, etc
-	 * 
-	 * @return Entero
-	 */
-	protected Integer getDurPkmnStatus() {
-		return duracionCondPkmn.get(1);
-	}
-
-	/**
-	 * Devuelve la duración de estar atrapado, no puede huir, etc
-	 * 
-	 * @return Enum 'CondPosiPkmn'
-	 */
-	protected Integer getDurPkmnArena() {
-		return duracionCondPkmn.get(0);
-	}
-
-	/**
-	 * Pone la duración de Protección, Velo Magico, Anillo Agua, etc
-	 */
-	protected void setDurPkmnStatus(int dura) {
-		this.duracionCondPkmn.set(1, dura);
-	}
-
-	/**
-	 * Pone la duración de atrapado, sin huida, etc
-	 */
-	protected void setDurPkmnArena(int dura) {
-		this.duracionCondPkmn.set(0, dura);
 	}
 
 	protected Entrenador getEntrenador() {
