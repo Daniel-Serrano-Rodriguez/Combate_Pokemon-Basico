@@ -323,7 +323,7 @@ public class Pokemon implements Cloneable {
 		boolean elegido;
 
 		do {
-			System.out.println("¿Qué hará " + this.nombre + "?\n");
+			System.out.println("¿Qué hará " + this.nombre + "?");
 			mostrarMovimientos();
 			System.out.print("->: ");
 			move = Integer.parseInt(sc.nextLine());

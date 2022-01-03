@@ -13,6 +13,10 @@ import utils.Estado;
 public class Combate {
 	private Entrenador entrenador1, entrenador2;
 	private ArrayList<Pokemon> pokemon1, pokemon2, combatientes;
+	// TODO si el pokemon es ditto, y usa el movimiento de copiar, se le reduce en 1
+	// al contandor del movimiento, se crea una copia en ditto[], y se actualiza el
+	// pokemon con los datos del pokemon objetivo
+	private Pokemon[] ditto;
 	private Move[] moves;
 	private CondArena condArena;
 	private int contCondArena;
@@ -129,29 +133,11 @@ public class Combate {
 
 			setPkmnId(this.combatientes);
 
-			System.out.println("\nTurno de " + this.entrenador1.getNombre());
-			for (Pokemon pkmn : this.entrenador1.getEquipo()) {
-				if (!pkmn.hasCond(CondPosiPkmn.Cargando)) {
-					System.out.println(pkmn);
-					this.moves[pkmn.getIdPelea()] = pkmn.elegirMovimiento();
-					if (this.combatientes.size() == 2) {
-						pkmn.setAtaca(0);
-					}
-					// WIP expansión para combates 2vs2, 3vs3
-				}
-			}
+			System.out.println("\n\nTurno de " + this.entrenador1.getNombre() + "\n¿Qué quieres hacer?\n");
+			choiceBlock(this.entrenador1, this.pokemon1, this.pokemon2);
 
-			System.out.println("\nTurno de " + this.entrenador2.getNombre());
-			for (Pokemon pkmn : this.entrenador2.getEquipo()) {
-				if (!pkmn.hasCond(CondPosiPkmn.Cargando)) {
-					System.out.println(pkmn);
-					this.moves[pkmn.getIdPelea()] = pkmn.elegirMovimiento();
-					if (this.combatientes.size() == 2) {
-						pkmn.setAtaca(0);
-					}
-					// WIP expansión para combates 2vs2, 3vs3
-				}
-			}
+			System.out.println("\n\nTurno de " + this.entrenador2.getNombre());
+			choiceBlock(this.entrenador2, this.pokemon2, this.pokemon1);
 
 			ListIterator<Pokemon> combate = this.combatientes.listIterator();
 
@@ -205,6 +191,66 @@ public class Combate {
 //		}
 	}
 
+	private void choiceBlock(Entrenador entrenador, ArrayList<Pokemon> atacantes, ArrayList<Pokemon> rivales) {
+		@SuppressWarnings("resource")
+		Scanner sc = new Scanner(System.in);
+		boolean choice = false, notNum = true;
+
+		do {
+			while (notNum) {
+				try {
+					for (Pokemon pokemon : atacantes) {
+						System.out.println("Estado " + pokemon);
+					}
+					System.out.println("\n1.Atacar\n2.Cambiar Pokemon\n");
+					System.out.print("->: ");
+					switch (Integer.parseInt(sc.nextLine())) {
+					case 1:
+						choice = true;
+						notNum = false;
+						selAtack(atacantes, rivales);
+						break;
+
+					case 2:
+						choice = true;
+						notNum = false;
+						choosePkmn(entrenador.getEquipo());
+						break;
+
+					default:
+						choice = false;
+						System.out.println("\n\nElige un numero correcto\n");
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("\n\nIntroduce un numero\n");
+				}
+			}
+		} while (!choice);
+	}
+
+	private void selAtack(ArrayList<Pokemon> atacantes, ArrayList<Pokemon> rivales) {
+		for (Pokemon pkmn : atacantes) {
+			if (!pkmn.hasCond(CondPosiPkmn.Cargando)) {
+				System.out.print("\n\n");
+				this.moves[pkmn.getIdPelea()] = pkmn.elegirMovimiento();
+				if (this.combatientes.size() == 2) {
+					pkmn.setAtaca(0);
+				}
+				// WIP expansión para combates 2vs2, 3vs3
+			}
+		}
+	}
+
+	private void choosePkmn(ArrayList<Pokemon> equipo) {
+		System.out.println("\n¿A quien quieres sacar?\n");
+		for (int i = 0; i < equipo.size(); i++) {
+			if (i % 2 == 0)
+				System.out.println();
+
+			System.out.print((i + 1) + "." + equipo.get(i).getNombre() + "     \t");
+		}
+	}
+
 	private Pokemon quienEmpiezaTurno(ArrayList<Pokemon> pokemons) {
 		int fastest = Integer.MIN_VALUE;
 		Pokemon pkmn = null;
@@ -219,10 +265,8 @@ public class Combate {
 
 	private void aplicarMovimiento(ArrayList<Pokemon> equipo, Pokemon atacante, Move movimiento, Pokemon rival) {
 		if (atacante.getActualHp() > 0) {
-			// TODO aplicar formulas de daño
 			if (movimiento.getActPP() > 0) {
 				removePkmnStatus(atacante);
-
 				switch (atacante.getEstado()) {
 				case Paralisis: {
 					if ((int) (Math.random() * 101) > 25) {
@@ -313,11 +357,10 @@ public class Combate {
 
 		if (!atacante.hasCond(CondPosiPkmn.Cargando))
 			movimiento = (Move) apoyo.copiarMove();
-		
+
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -471,17 +514,7 @@ public class Combate {
 		switch (this.condArena) {
 		// Falta, y mucho
 		case Soleado:
-			switch (movimiento.getTipo()) {
-			case Fuego:
-				movimiento.setDamage((int) (movimiento.getDamage() * 1.5));
-				break;
-
-			case Agua:
-				movimiento.setDamage((int) (movimiento.getDamage() * 0.5));
-				break;
-
-			default:
-			}
+			// Precisiones y esas movidas
 
 		default:
 		}
@@ -835,6 +868,7 @@ public class Combate {
 			}
 		} while (!elegido);
 		setPkmnMoves(entrenador.getEquipo().get(entrenador.getEquipo().size() - 1));
+		System.out.println();
 	}
 
 	private void setPkmnMoves(Pokemon pokemon) {
@@ -850,10 +884,4 @@ public class Combate {
 			pokemons.get(i).setIdPelea(i);
 		}
 	}
-
-	/*
-	 * TODO En el combate: si condArena != CondArena.Ninguno, aplicar el daño y las
-	 * condiciones que sean Si condPoke1/2 != CondPosiPoke.Ninguno, aplicar el daño
-	 * y las condiciones que sean
-	 */
 }
