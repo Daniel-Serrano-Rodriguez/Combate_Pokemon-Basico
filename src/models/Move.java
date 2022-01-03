@@ -600,14 +600,14 @@ public class Move implements Cloneable {
 	 * Funcion que devuelve un multiplicador en funcion de la efectividad del
 	 * movimiento
 	 * 
-	 * @param atacante Tipo del ataque del objeto 'Pokemon' que ataca
-	 * @param rival    Tipo del objeto 'Pokemon' rival
+	 * @param tipoMovimiento Tipo del ataque del objeto 'Pokemon' que ataca
+	 * @param tipoRival    Tipo del objeto 'Pokemon' rival
 	 * @return Doble que representa el multiplicador (0, 0.5, 1, 2)
 	 */
-	protected double getEfectividad(Tipo atacante, Tipo rival) {
-		switch (atacante) {
+	protected double getEfectividad(Tipo tipoMovimiento, Tipo tipoRival) {
+		switch (tipoMovimiento) {
 		case Normal: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -641,7 +641,7 @@ public class Move implements Cloneable {
 		}
 
 		case Fuego: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -676,7 +676,7 @@ public class Move implements Cloneable {
 		}
 
 		case Agua: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -711,7 +711,7 @@ public class Move implements Cloneable {
 		}
 
 		case Electrico: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -747,7 +747,7 @@ public class Move implements Cloneable {
 		}
 
 		case Planta: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -782,7 +782,7 @@ public class Move implements Cloneable {
 		}
 
 		case Hielo: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -818,7 +818,7 @@ public class Move implements Cloneable {
 		}
 
 		case Lucha: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Fuego:
@@ -853,7 +853,7 @@ public class Move implements Cloneable {
 		}
 
 		case Veneno: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -888,7 +888,7 @@ public class Move implements Cloneable {
 		}
 
 		case Tierra: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -923,7 +923,7 @@ public class Move implements Cloneable {
 		}
 
 		case Volador: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -957,7 +957,7 @@ public class Move implements Cloneable {
 		}
 
 		case Psiquico: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -992,7 +992,7 @@ public class Move implements Cloneable {
 		}
 
 		case Bicho: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -1026,7 +1026,7 @@ public class Move implements Cloneable {
 		}
 
 		case Roca: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -1060,7 +1060,7 @@ public class Move implements Cloneable {
 		}
 
 		case Fantasma: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Fuego:
@@ -1095,7 +1095,7 @@ public class Move implements Cloneable {
 		}
 
 		case Dragon: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -1130,7 +1130,7 @@ public class Move implements Cloneable {
 		}
 
 		case Siniestro: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -1164,7 +1164,7 @@ public class Move implements Cloneable {
 		}
 
 		case Acero: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
@@ -1198,7 +1198,7 @@ public class Move implements Cloneable {
 		}
 
 		case Hada: {
-			switch (rival) {
+			switch (tipoRival) {
 			// Devuelven 1
 			case Ninguno:
 			case Normal:
