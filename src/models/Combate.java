@@ -211,7 +211,7 @@ public class Combate {
 							System.out.println(this.entrenador2.getNombre() + " cambia a "
 									+ this.pokemon2.get(atacante.getPosicion()).getNombre() + " por "
 									+ this.change[atacante.getIdPelea()].getNombre());
-							aplicarMovimiento(this.entrenador1.getEquipo(), this.pokemon2, atacante,
+							aplicarMovimiento(this.entrenador2.getEquipo(), this.pokemon2, atacante,
 									this.moves[atacante.getIdPelea()], this.pokemon2.get(0));
 						} else {
 							System.out.println(atacante.getNombre() + " ha usado "
@@ -248,14 +248,15 @@ public class Combate {
 		boolean choice = false, notNum = true;
 
 		for (Pokemon pokemon : atacantes) {
-			if (pokemon.getActualHp() == 0) {
+			if (pokemon.getActualHp() <= 0) {
+				System.out.println(pokemon.getNombre() + " no puede continuar la batalla.");
 				choosePkmn(entrenador.getEquipo(), atacantes, pokemon.getIdPelea());
 				pokemon.setEstado(Estado.Ninguno);
 				pokemon.setTurnosEstado(0);
 				pokemon.clearPkmnCond();
 				pokemon.clearDurPkmnCond();
-				entrenador.getEquipo().add(pokemon.copiarPokemon());
-				pokemon = this.change[pokemon.getIdPelea()].copiarPokemon();
+				atacantes.remove(pokemon);
+				atacantes.add(this.change[pokemon.getIdPelea()]);
 				this.change[pokemon.getIdPelea()] = null;
 				this.moves[pokemon.getIdPelea()] = null;
 			}
@@ -331,9 +332,10 @@ public class Combate {
 						if (i % 2 == 0)
 							System.out.println();
 
-						for (Pokemon poke : atacantes)
-							if (!equipo.get(i).equals(poke))
-								System.out.print((i + 1) + "." + equipo.get(i).getNombre() + "     \t");
+						if (equipo.get(i).getIdPelea() == posicion)
+							System.out.print((i + 1) + "." + equipo.get(i).getNombre() + " (En uso)  \t");
+						else
+							System.out.print((i + 1) + "." + equipo.get(i).getNombre() + "           \t");
 					}
 					System.out.print("\n\n->: ");
 
@@ -346,13 +348,12 @@ public class Combate {
 						choice = true;
 						notNum = false;
 
-						this.change[posicion] = equipo.get(opc - 1).copiarPokemon();
+						this.change[posicion] = equipo.get(opc - 1);
 						this.change[posicion].setIdPelea(posicion);
 						for (Pokemon poke : atacantes)
 							if (poke.getIdPelea() == posicion)
 								this.change[posicion].setPosicion(poke.getPosicion());
 
-						equipo.remove(opc - 1);
 						this.moves[posicion] = utils.Almacen.almacenMovimientos.get(1);
 					}
 				} catch (NumberFormatException e) {
@@ -442,10 +443,11 @@ public class Combate {
 
 			} else {
 				if (movimiento.getMove() == Moves.Change) {
-					equipo.add(atacante.copiarPokemon());
-					pkmnArena.remove(atacante);
-					pkmnArena.add(this.change[atacante.getIdPelea()].copiarPokemon());
+					pkmnArena.add(this.change[atacante.getIdPelea()]);
 					this.moves[atacante.getIdPelea()] = null;
+					atacante.setIdPelea(-1);
+					atacante.setPosicion(-1);
+					pkmnArena.remove(atacante);
 				} else {
 					int damage = calcDamage(atacante, rival, utils.Almacen.almacenMovimientos.get(0));
 
@@ -638,12 +640,12 @@ public class Combate {
 			double random, double stab, double efectividad, double quemadura, double otro) {
 		if (movimiento.getClase() == Clase.Fisico) {
 			return (int) (((((((2 * atacante.getLevel()) / 5) + 2) * movimiento.getDamage()
-					* (atacante.getAttack() / rival.getDefence())) / 50) + 2) * 1 * modTiempo * crit * random * stab
-					* efectividad * quemadura * otro);
+					* ((double) atacante.getAttack() / (double) rival.getDefence())) / 50) + 2) * 1 * modTiempo * crit
+					* random * stab * efectividad * quemadura * otro);
 		} else if (movimiento.getClase() == Clase.Especial) {
 			return (int) ((((((((2 * atacante.getLevel()) / 5) + 2) * movimiento.getDamage())
-					* (atacante.getSpAttack() / rival.getSpDefence())) / 50) + 2) * 1 * modTiempo * crit * random * stab
-					* efectividad * quemadura * otro);
+					* ((double) atacante.getSpAttack() / (double) rival.getSpDefence())) / 50) + 2) * 1 * modTiempo
+					* crit * random * stab * efectividad * quemadura * otro);
 		}
 		return 0;
 	}
@@ -1120,15 +1122,6 @@ public class Combate {
 		}
 	}
 
-	private boolean hasMove(Moves movimiento) {
-		for (Move move : this.moves) {
-			if (move.getMove() == movimiento) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * Funcion que nos permite configurar los entrenadores del combate
 	 */
@@ -1196,8 +1189,7 @@ public class Combate {
 			int random = (int) (Math.random() * utils.Almacen.almacenMovimientos.size());
 			if (random < 2)
 				random = 2;
-			pokemon.aprenderMovimiento(utils.Almacen.almacenMovimientos
-					.get(((int) (Math.random() * utils.Almacen.almacenMovimientos.size()))).copiarMove());
+			pokemon.aprenderMovimiento(utils.Almacen.almacenMovimientos.get(random).copiarMove());
 		}
 	}
 

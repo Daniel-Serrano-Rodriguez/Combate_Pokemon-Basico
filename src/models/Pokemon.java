@@ -15,9 +15,8 @@ public class Pokemon implements Cloneable {
 	private ArrayList<Integer> durPkmnCond;
 	private Entrenador entrenador;
 	private String nombre;
-	private int maxHP, actualHp, numero, level, speed, idPelea, turnosEstado, cntChngAtk, cntChngSpAtk, cntChngDef,
+	private int maxHP, actualHp, numero, level,attack, defence, spAttack, spDefence, speed, idPelea, turnosEstado, cntChngAtk, cntChngSpAtk, cntChngDef,
 			cntChngSpDef, cntChngSpe;
-	private double attack, defence, spAttack, spDefence;
 	/**
 	 * posicion indica la posicón que ocupa el pokemon en el combate, 0 para 1vs1,
 	 * 0-1 para 2vs2 y de 0 a 2 para 3vs3
@@ -47,7 +46,7 @@ public class Pokemon implements Cloneable {
 	 * @param speed     Entero que representa la velocidad del pokemon
 	 */
 	public Pokemon(Tipo tipo1, Tipo tipo2, Estado estado, String nombre, int numero, int level, int maxHP,
-			double attack, double defence, double spAttack, double spDefence, int speed) {
+			int attack, int defence, int spAttack, int spDefence, int speed) {
 		super();
 		this.tipo1 = tipo1;
 		this.tipo2 = tipo2;
@@ -200,7 +199,7 @@ public class Pokemon implements Cloneable {
 		this.level = level;
 	}
 
-	public double getAttack() {
+	public int getAttack() {
 		return attack;
 	}
 
@@ -208,7 +207,7 @@ public class Pokemon implements Cloneable {
 		this.attack = attack;
 	}
 
-	public double getDefence() {
+	public int getDefence() {
 		return defence;
 	}
 
@@ -216,7 +215,7 @@ public class Pokemon implements Cloneable {
 		this.defence = defence;
 	}
 
-	public double getSpAttack() {
+	public int getSpAttack() {
 		return spAttack;
 	}
 
@@ -224,7 +223,7 @@ public class Pokemon implements Cloneable {
 		this.spAttack = spAttack;
 	}
 
-	public double getSpDefence() {
+	public int getSpDefence() {
 		return spDefence;
 	}
 
