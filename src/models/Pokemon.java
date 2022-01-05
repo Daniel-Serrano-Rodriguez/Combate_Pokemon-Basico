@@ -108,7 +108,11 @@ public class Pokemon implements Cloneable {
 	protected ArrayList<CondPosiPkmn> getPkmnCond() {
 		return pkmnCond;
 	}
-
+	
+	protected void clearPkmnCond() {
+		this.pkmnCond = new ArrayList<CondPosiPkmn>();
+	}
+	
 	protected void addPkmnCond(CondPosiPkmn pkmnCond) {
 		this.pkmnCond.add(pkmnCond);
 		this.durPkmnCond.add(-1);
@@ -138,6 +142,10 @@ public class Pokemon implements Cloneable {
 
 	protected ArrayList<Integer> getDurPkmnCond() {
 		return durPkmnCond;
+	}
+	
+	protected void clearDurPkmnCond() {
+		this.durPkmnCond = new ArrayList<Integer>();
 	}
 
 	protected void setDurPkmnCond(int posi, int durPkmnCond) {
@@ -407,7 +415,7 @@ public class Pokemon implements Cloneable {
 		poke.movimientos = (ArrayList<Move>) this.movimientos.clone();
 		poke.pkmnCond = (ArrayList<CondPosiPkmn>) this.pkmnCond.clone();
 		poke.durPkmnCond = (ArrayList<Integer>) this.durPkmnCond.clone();
-		poke.entrenador = null;
+		poke.entrenador = this.entrenador;
 		poke.nombre = this.nombre;
 		poke.maxHP = this.maxHP;
 		poke.actualHp = this.maxHP;
@@ -418,9 +426,9 @@ public class Pokemon implements Cloneable {
 		poke.spAttack = this.spAttack;
 		poke.spDefence = this.spDefence;
 		poke.speed = this.speed;
-		poke.posicion = -1;
-		poke.ataca = -1;
-		poke.idPelea = -1;
+		poke.posicion = this.posicion;
+		poke.ataca = this.ataca;
+		poke.idPelea = this.idPelea;
 
 		return poke;
 	}

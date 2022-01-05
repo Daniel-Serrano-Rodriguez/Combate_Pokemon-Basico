@@ -9,6 +9,7 @@ import models.TipoPokemon.Tipo;
 import utils.CondArena;
 import utils.CondPosiPkmn;
 import utils.Estado;
+import utils.Moves;
 
 public class Combate {
 	private Entrenador entrenador1, entrenador2;
@@ -17,6 +18,7 @@ public class Combate {
 	// al contandor del movimiento, se crea una copia en ditto[], y se actualiza el
 	// pokemon con los datos del pokemon objetivo
 	private Pokemon[] ditto;
+	private Pokemon[] change;
 	private Move[] moves;
 	private CondArena condArena;
 	private int contCondArena;
@@ -34,12 +36,15 @@ public class Combate {
 		if (tipoCombate == 2) {
 			this.moves = new Move[4];
 			this.ditto = new Pokemon[4];
+			this.change = new Pokemon[4];
 		} else if (tipoCombate == 3) {
 			this.moves = new Move[6];
 			this.ditto = new Pokemon[6];
+			this.change = new Pokemon[6];
 		} else {
 			this.moves = new Move[2];
 			this.ditto = new Pokemon[2];
+			this.change = new Pokemon[2];
 		}
 		this.condArena = CondArena.Ninguno;
 		this.contCondArena = 0;
@@ -59,10 +64,16 @@ public class Combate {
 		this.combatientes = new ArrayList<Pokemon>();
 		if (tipoCombate == 2) {
 			this.moves = new Move[4];
+			this.ditto = new Pokemon[4];
+			this.change = new Pokemon[4];
 		} else if (tipoCombate == 3) {
 			this.moves = new Move[6];
+			this.ditto = new Pokemon[6];
+			this.change = new Pokemon[6];
 		} else {
 			this.moves = new Move[2];
+			this.ditto = new Pokemon[2];
+			this.change = new Pokemon[2];
 		}
 		this.condArena = CondArena.Ninguno;
 		this.contCondArena = 0;
@@ -172,19 +183,42 @@ public class Combate {
 					if (atacante.hasCond(CondPosiPkmn.Cargando)) {
 						System.out.println(atacante.getNombre() + " está cargando "
 								+ this.moves[atacante.getIdPelea()].getNombre());
-						aplicarMovimiento(this.entrenador1.getEquipo(), atacante, this.moves[atacante.getIdPelea()],
-								this.pokemon2.get(atacante.getAtaca()));
+						aplicarMovimiento(this.entrenador1.getEquipo(), null, atacante,
+								this.moves[atacante.getIdPelea()], this.pokemon2.get(atacante.getAtaca()));
 					} else {
-						System.out.println(
-								atacante.getNombre() + " ha usado " + this.moves[atacante.getIdPelea()].getNombre());
-						aplicarMovimiento(this.entrenador1.getEquipo(), atacante, this.moves[atacante.getIdPelea()],
-								this.pokemon2.get(atacante.getAtaca()));
+						if (this.moves[atacante.getIdPelea()].getMove() == Moves.Change) {
+							System.out.println(this.entrenador1.getNombre() + " cambia a "
+									+ this.pokemon1.get(atacante.getIdPelea()).getNombre() + " por "
+									+ this.change[atacante.getIdPelea()].getNombre());
+							aplicarMovimiento(this.entrenador1.getEquipo(), this.pokemon1, atacante,
+									this.moves[atacante.getIdPelea()], this.pokemon2.get(0));
+						} else {
+							System.out.println(atacante.getNombre() + " ha usado "
+									+ this.moves[atacante.getIdPelea()].getNombre());
+							aplicarMovimiento(this.entrenador1.getEquipo(), null, atacante,
+									this.moves[atacante.getIdPelea()], this.pokemon2.get(atacante.getAtaca()));
+						}
 					}
 				} else {
-					System.out.println(
-							atacante.getNombre() + " ha usado " + this.moves[atacante.getIdPelea()].getNombre());
-					aplicarMovimiento(this.entrenador2.getEquipo(), atacante, this.moves[atacante.getIdPelea()],
-							this.pokemon1.get(atacante.getAtaca()));
+					if (atacante.hasCond(CondPosiPkmn.Cargando)) {
+						System.out.println(atacante.getNombre() + " está cargando "
+								+ this.moves[atacante.getIdPelea()].getNombre());
+						aplicarMovimiento(this.entrenador2.getEquipo(), null, atacante,
+								this.moves[atacante.getIdPelea()], this.pokemon1.get(atacante.getAtaca()));
+					} else {
+						if (this.moves[atacante.getIdPelea()].getMove() == Moves.Change) {
+							System.out.println(this.entrenador2.getNombre() + " cambia a "
+									+ this.pokemon2.get(atacante.getPosicion()).getNombre() + " por "
+									+ this.change[atacante.getIdPelea()].getNombre());
+							aplicarMovimiento(this.entrenador1.getEquipo(), this.pokemon2, atacante,
+									this.moves[atacante.getIdPelea()], this.pokemon2.get(0));
+						} else {
+							System.out.println(atacante.getNombre() + " ha usado "
+									+ this.moves[atacante.getIdPelea()].getNombre());
+							aplicarMovimiento(this.entrenador2.getEquipo(), null, atacante,
+									this.moves[atacante.getIdPelea()], this.pokemon1.get(atacante.getAtaca()));
+						}
+					}
 				}
 			}
 		}
@@ -212,6 +246,18 @@ public class Combate {
 		boolean choice = false, notNum = true;
 
 		for (Pokemon pokemon : atacantes) {
+			if (pokemon.getActualHp() == 0) {
+				choosePkmn(entrenador.getEquipo(), atacantes, pokemon.getIdPelea());
+				pokemon.setEstado(Estado.Ninguno);
+				pokemon.setTurnosEstado(0);
+				pokemon.clearPkmnCond();
+				pokemon.clearDurPkmnCond();
+				entrenador.getEquipo().add(pokemon.copiarPokemon());
+				pokemon = this.change[pokemon.getIdPelea()].copiarPokemon();
+				this.change[pokemon.getIdPelea()] = null;
+				this.moves[pokemon.getIdPelea()] = null;
+			}
+
 			if (!pokemon.hasCond(CondPosiPkmn.Cargando)) {
 				do {
 					while (notNum) {
@@ -229,7 +275,7 @@ public class Combate {
 							case 2:
 								choice = true;
 								notNum = false;
-								choosePkmn(entrenador.getEquipo());
+								choosePkmn(entrenador.getEquipo(), atacantes, pokemon.getIdPelea());
 								break;
 
 							default:
@@ -269,14 +315,50 @@ public class Combate {
 	 * 
 	 * @param equipo ArrayList<Pokemon> que representa el equipo del entrenador
 	 */
-	private void choosePkmn(ArrayList<Pokemon> equipo) {
-		System.out.println("\n¿A quien quieres sacar?\n");
-		for (int i = 0; i < equipo.size(); i++) {
-			if (i % 2 == 0)
-				System.out.println();
+	private void choosePkmn(ArrayList<Pokemon> equipo, ArrayList<Pokemon> atacantes, int posicion) {
+		@SuppressWarnings("resource")
+		Scanner sc = new Scanner(System.in);
+		boolean notNum = true, choice = false;
+		int opc;
 
-			System.out.print((i + 1) + "." + equipo.get(i).getNombre() + "     \t");
-		}
+		do {
+			while (notNum) {
+				try {
+					System.out.println("\n¿A quien quieres sacar?\n");
+					for (int i = 0; i < equipo.size(); i++) {
+						if (i % 2 == 0)
+							System.out.println();
+
+						for (Pokemon poke : atacantes)
+							if (!equipo.get(i).equals(poke))
+								System.out.print((i + 1) + "." + equipo.get(i).getNombre() + "     \t");
+					}
+					System.out.print("\n\n->: ");
+
+					opc = Integer.parseInt(sc.nextLine());
+
+					if (opc < 1 && opc > equipo.size()) {
+						choice = false;
+						System.out.println("\n\nElige un numero correcto\n");
+					} else {
+						choice = true;
+						notNum = false;
+
+						this.change[posicion] = equipo.get(opc - 1).copiarPokemon();
+						this.change[posicion].setIdPelea(posicion);
+						for (Pokemon poke : atacantes)
+							if (poke.getIdPelea() == posicion)
+								this.change[posicion].setPosicion(poke.getPosicion());
+						
+						equipo.remove(opc - 1);
+						this.moves[posicion] = utils.Almacen.almacenMovimientos.get(1);
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("\n\nIntroduce un numero\n");
+				}
+			}
+		} while (!choice);
+
 	}
 
 	/**
@@ -307,7 +389,8 @@ public class Combate {
 	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
 	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
 	 */
-	private void aplicarMovimiento(ArrayList<Pokemon> equipo, Pokemon atacante, Move movimiento, Pokemon rival) {
+	private void aplicarMovimiento(ArrayList<Pokemon> equipo, ArrayList<Pokemon> pkmnArena, Pokemon atacante,
+			Move movimiento, Pokemon rival) {
 		if (atacante.getActualHp() > 0) {
 			if (movimiento.getActPP() > 0) {
 				removePkmnStatus(atacante);
@@ -356,11 +439,17 @@ public class Combate {
 				}
 
 			} else {
-				int damage = calcDamage(atacante, rival, utils.Almacen.almacenMovimientos.get(0));
+				if (movimiento.getMove() == Moves.Change) {
+					equipo.add(atacante.copiarPokemon());
+					pkmnArena.remove(atacante);
+					pkmnArena.add(this.change[atacante.getIdPelea()].copiarPokemon());
+				} else {
+					int damage = calcDamage(atacante, rival, utils.Almacen.almacenMovimientos.get(0));
 
-				rival.setActualHp(rival.getActualHp() - damage);
+					rival.setActualHp(rival.getActualHp() - damage);
 
-				atacante.setActualHp(atacante.getActualHp() - ((int) (atacante.getMaxHP() / 4)));
+					atacante.setActualHp(atacante.getActualHp() - ((int) (atacante.getMaxHP() / 4)));
+				}
 			}
 			applyPkmnStatus(atacante, rival);
 		}
@@ -1028,6 +1117,15 @@ public class Combate {
 		}
 	}
 
+	private boolean hasMove(Moves movimiento) {
+		for (Move move : this.moves) {
+			if (move.getMove() == movimiento) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Funcion que nos permite configurar los entrenadores del combate
 	 */
@@ -1075,6 +1173,12 @@ public class Combate {
 			}
 		} while (!elegido);
 		setPkmnMoves(entrenador.getEquipo().get(entrenador.getEquipo().size() - 1));
+		for (int i = 1; i < 6; i++) {
+			entrenador.meterPkmnEquipo(utils.Almacen.almacenPokemon
+					.get((int) (Math.random() * utils.Almacen.almacenPokemon.size())).copiarPokemon());
+			entrenador.getEquipo().get(i).setEntrenador(entrenador);
+			System.out.println(entrenador.getEquipo().get(i));
+		}
 		System.out.println();
 	}
 
