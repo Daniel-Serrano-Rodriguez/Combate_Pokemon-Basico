@@ -164,21 +164,22 @@ public class Combate {
 				int prioridad = Integer.MIN_VALUE;
 
 				for (Move move : this.moves) {
-					if (move.getPrioridad() > prioridad) {
-						prioridad = move.getPrioridad();
-					}
+					if (move != null)
+						if (move.getPrioridad() > prioridad) {
+							prioridad = move.getPrioridad();
+						}
 				}
 
 				for (int i = 0; i < this.moves.length; i++) {
-					if (moves[i].getPrioridad() == prioridad) {
-						if (i < this.combatientes.size())
-							priori.add(this.combatientes.get(i));
-					}
+					if (this.moves[i] != null)
+						if (this.moves[i].getPrioridad() == prioridad) {
+							if (i < this.combatientes.size())
+								priori.add(this.combatientes.get(i));
+						}
 				}
 
 				atacante = quienEmpiezaTurno(priori);
 
-				combatientes.remove(atacante);
 				if (atacante.getEntrenador() == this.entrenador1) {
 					if (atacante.hasCond(CondPosiPkmn.Cargando)) {
 						System.out.println(atacante.getNombre() + " está cargando "
@@ -220,6 +221,7 @@ public class Combate {
 						}
 					}
 				}
+				combatientes.remove(atacante);
 			}
 		}
 
@@ -349,7 +351,7 @@ public class Combate {
 						for (Pokemon poke : atacantes)
 							if (poke.getIdPelea() == posicion)
 								this.change[posicion].setPosicion(poke.getPosicion());
-						
+
 						equipo.remove(opc - 1);
 						this.moves[posicion] = utils.Almacen.almacenMovimientos.get(1);
 					}
@@ -443,6 +445,7 @@ public class Combate {
 					equipo.add(atacante.copiarPokemon());
 					pkmnArena.remove(atacante);
 					pkmnArena.add(this.change[atacante.getIdPelea()].copiarPokemon());
+					this.moves[atacante.getIdPelea()] = null;
 				} else {
 					int damage = calcDamage(atacante, rival, utils.Almacen.almacenMovimientos.get(0));
 
@@ -1177,7 +1180,7 @@ public class Combate {
 			entrenador.meterPkmnEquipo(utils.Almacen.almacenPokemon
 					.get((int) (Math.random() * utils.Almacen.almacenPokemon.size())).copiarPokemon());
 			entrenador.getEquipo().get(i).setEntrenador(entrenador);
-			System.out.println(entrenador.getEquipo().get(i));
+			setPkmnMoves(entrenador.getEquipo().get(i));
 		}
 		System.out.println();
 	}
@@ -1190,6 +1193,9 @@ public class Combate {
 	 */
 	private void setPkmnMoves(Pokemon pokemon) {
 		for (int i = 0; i < 4; i++) {
+			int random = (int) (Math.random() * utils.Almacen.almacenMovimientos.size());
+			if (random < 2)
+				random = 2;
 			pokemon.aprenderMovimiento(utils.Almacen.almacenMovimientos
 					.get(((int) (Math.random() * utils.Almacen.almacenMovimientos.size()))).copiarMove());
 		}
