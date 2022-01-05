@@ -44,13 +44,25 @@ public class Entrenador {
 		this.equipo.meterPokemon(pokemon);
 	}
 
+	/**
+	 * Funcion que comprueba que el entrenador tiene al menos 1 pokemon capaz de
+	 * combatir
+	 * 
+	 * @return Booleano
+	 */
 	protected boolean puedeCombatir() {
+		int comprobarOk = 0;
+
 		for (Pokemon pokemon : this.equipo.getEquipo()) {
-			if (pokemon.getActualHp() > 0) {
-				return true;
+			if (pokemon.getActualHp() < 0) {
+				comprobarOk++;
 			}
 		}
 
-		return false;
+		if (comprobarOk < this.equipo.getEquipo().size()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

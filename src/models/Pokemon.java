@@ -46,8 +46,8 @@ public class Pokemon implements Cloneable {
 	 * @param spDefence Entero que representa la defense especila del Pokemon
 	 * @param speed     Entero que representa la velocidad del pokemon
 	 */
-	public Pokemon(Tipo tipo1, Tipo tipo2, Estado estado, String nombre, int numero, int level, int maxHP, double attack,
-			double defence, double spAttack, double spDefence, int speed) {
+	public Pokemon(Tipo tipo1, Tipo tipo2, Estado estado, String nombre, int numero, int level, int maxHP,
+			double attack, double defence, double spAttack, double spDefence, int speed) {
 		super();
 		this.tipo1 = tipo1;
 		this.tipo2 = tipo2;
@@ -305,6 +305,9 @@ public class Pokemon implements Cloneable {
 	}
 
 	// Methods
+	/**
+	 * Muestra los movimientos del pokemon
+	 */
 	public void mostrarMovimientos() {
 		for (int i = 0; i < this.movimientos.size(); i++) {
 			if (i % 2 == 0) {
@@ -316,6 +319,11 @@ public class Pokemon implements Cloneable {
 		System.out.println("\n");
 	}
 
+	/**
+	 * Nos permite elegir un movimiento de los que posee el pokemon
+	 * 
+	 * @return Objeto 'Move'
+	 */
 	public Move elegirMovimiento() {
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
@@ -339,6 +347,12 @@ public class Pokemon implements Cloneable {
 		return null;
 	}
 
+	/**
+	 * Permite al pokemon aprender un movimiento
+	 * 
+	 * @param movimiento Objeto 'Move' que representa el movimiento que el pokemon
+	 *                   va a aprender
+	 */
 	public void aprenderMovimiento(Move movimiento) {
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
@@ -379,6 +393,11 @@ public class Pokemon implements Cloneable {
 		}
 	}
 
+	/**
+	 * Nos permite copiar el pokemon
+	 * 
+	 * @return Objeto 'Pokemon'
+	 */
 	@SuppressWarnings("unchecked")
 	public Pokemon copiarPokemon() {
 		Pokemon poke = new Pokemon();

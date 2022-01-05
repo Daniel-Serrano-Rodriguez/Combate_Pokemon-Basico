@@ -78,10 +78,10 @@ public class Move implements Cloneable {
 	 * @param chnSpeRiv          Entero que representa cuantos niveles cambia a la
 	 *                           velocidad del rival (0, 1, 2, 3)
 	 */
-	protected Move(Estado aplicaEstado, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo,
-			Clase clase, Moves move, String nombre, String descripcion, int maxPP, int damage, int precision,
-			int prioridad, int chnAtkYou, int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv,
-			int chnSpDefYou, int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
+	protected Move(Estado aplicaEstado, CondPosiPkmn aplicaCondPosiPkmn, Tipo tipo, Clase clase, Moves move,
+			String nombre, String descripcion, int maxPP, int damage, int precision, int prioridad, int chnAtkYou,
+			int chnAtkRiv, int chnDefYou, int chnDefRiv, int chnSpAtkYou, int chnSpAtkRiv, int chnSpDefYou,
+			int chnSpDefRiv, int chnSpeYou, int chnSpeRiv) {
 		super();
 		this.aplicaEstado = aplicaEstado;
 		this.aplicaCondArena = CondArena.Ninguno;
@@ -565,6 +565,11 @@ public class Move implements Cloneable {
 	}
 
 	// Methods
+	/**
+	 * Copia el movimiento
+	 * 
+	 * @return Objeto 'Move'
+	 */
 	protected Move copiarMove() {
 		Move move = new Move();
 		move.aplicaEstado = this.aplicaEstado;
@@ -601,7 +606,7 @@ public class Move implements Cloneable {
 	 * movimiento
 	 * 
 	 * @param tipoMovimiento Tipo del ataque del objeto 'Pokemon' que ataca
-	 * @param tipoRival    Tipo del objeto 'Pokemon' rival
+	 * @param tipoRival      Tipo del objeto 'Pokemon' rival
 	 * @return Doble que representa el multiplicador (0, 0.5, 1, 2)
 	 */
 	protected double getEfectividad(Tipo tipoMovimiento, Tipo tipoRival) {

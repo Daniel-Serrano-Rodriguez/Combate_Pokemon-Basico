@@ -33,10 +33,13 @@ public class Combate {
 		this.combatientes = new ArrayList<Pokemon>();
 		if (tipoCombate == 2) {
 			this.moves = new Move[4];
+			this.ditto = new Pokemon[4];
 		} else if (tipoCombate == 3) {
 			this.moves = new Move[6];
+			this.ditto = new Pokemon[6];
 		} else {
 			this.moves = new Move[2];
+			this.ditto = new Pokemon[2];
 		}
 		this.condArena = CondArena.Ninguno;
 		this.contCondArena = 0;
@@ -120,6 +123,9 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Funcion que configura el combate si se va a realizar en el terminal
+	 */
 	private void combateTerminal() {
 		Pokemon atacante;
 
@@ -191,56 +197,78 @@ public class Combate {
 //		}
 	}
 
+	/**
+	 * Funcion para las diferentes elecciones que se pueden tener en el combate
+	 * 
+	 * @param entrenador Objeto 'Entrenador' que representa el entrenador
+	 * @param atacantes  ArrayList<Pokemon> que representa los pokemon del
+	 *                   entrenador que están combatiendo
+	 * @param rivales    ArrayList<Pokemon> que representa los pokemon del
+	 *                   entrenador rival que están combatiendo
+	 */
 	private void choiceBlock(Entrenador entrenador, ArrayList<Pokemon> atacantes, ArrayList<Pokemon> rivales) {
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
 		boolean choice = false, notNum = true;
 
-		do {
-			while (notNum) {
-				try {
-					for (Pokemon pokemon : atacantes) {
-						System.out.println("Estado " + pokemon);
+		for (Pokemon pokemon : atacantes) {
+			if (!pokemon.hasCond(CondPosiPkmn.Cargando)) {
+				do {
+					while (notNum) {
+						try {
+							System.out.println("Estado " + pokemon);
+							System.out.println("\n1.Atacar\n2.Cambiar Pokemon\n");
+							System.out.print("->: ");
+							switch (Integer.parseInt(sc.nextLine())) {
+							case 1:
+								choice = true;
+								notNum = false;
+								selAtack(atacantes, rivales);
+								break;
+
+							case 2:
+								choice = true;
+								notNum = false;
+								choosePkmn(entrenador.getEquipo());
+								break;
+
+							default:
+								choice = false;
+								System.out.println("\n\nElige un numero correcto\n");
+							}
+						} catch (NumberFormatException e) {
+							System.out.println("\n\nIntroduce un numero\n");
+						}
 					}
-					System.out.println("\n1.Atacar\n2.Cambiar Pokemon\n");
-					System.out.print("->: ");
-					switch (Integer.parseInt(sc.nextLine())) {
-					case 1:
-						choice = true;
-						notNum = false;
-						selAtack(atacantes, rivales);
-						break;
-
-					case 2:
-						choice = true;
-						notNum = false;
-						choosePkmn(entrenador.getEquipo());
-						break;
-
-					default:
-						choice = false;
-						System.out.println("\n\nElige un numero correcto\n");
-					}
-				} catch (NumberFormatException e) {
-					System.out.println("\n\nIntroduce un numero\n");
-				}
-			}
-		} while (!choice);
-	}
-
-	private void selAtack(ArrayList<Pokemon> atacantes, ArrayList<Pokemon> rivales) {
-		for (Pokemon pkmn : atacantes) {
-			if (!pkmn.hasCond(CondPosiPkmn.Cargando)) {
-				System.out.print("\n\n");
-				this.moves[pkmn.getIdPelea()] = pkmn.elegirMovimiento();
-				if (this.combatientes.size() == 2) {
-					pkmn.setAtaca(0);
-				}
-				// WIP expansión para combates 2vs2, 3vs3
+				} while (!choice);
 			}
 		}
 	}
 
+	/**
+	 * Funcion que permite seleccionar el ataque de cada pokemon
+	 * 
+	 * @param atacantes ArrayList<Pokemon> de los pokemon de los que se están
+	 *                  seleccionando los movimientos
+	 * @param rivales   ArrayList<Pokemon> de los pokemon rivales en la arena para
+	 *                  seleccionar a quien atacar
+	 */
+	private void selAtack(ArrayList<Pokemon> atacantes, ArrayList<Pokemon> rivales) {
+		for (Pokemon pkmn : atacantes) {
+			System.out.print("\n\n");
+			this.moves[pkmn.getIdPelea()] = pkmn.elegirMovimiento();
+			if (this.combatientes.size() == 2) {
+				pkmn.setAtaca(0);
+			}
+			// WIP expansión para combates 2vs2, 3vs3
+		}
+	}
+
+	/**
+	 * TODO Funcion que nos permite cambiar nuestro pokemon por otro del equipo
+	 * 
+	 * @param equipo ArrayList<Pokemon> que representa el equipo del entrenador
+	 */
 	private void choosePkmn(ArrayList<Pokemon> equipo) {
 		System.out.println("\n¿A quien quieres sacar?\n");
 		for (int i = 0; i < equipo.size(); i++) {
@@ -251,6 +279,12 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Devuelve el pokemon más rápido del grupo
+	 * 
+	 * @param pokemons ArrayList<Pokemon> de los atacantes con la misma velocidad
+	 * @return Objeto 'Pokemon' con mayor velocidad
+	 */
 	private Pokemon quienEmpiezaTurno(ArrayList<Pokemon> pokemons) {
 		int fastest = Integer.MIN_VALUE;
 		Pokemon pkmn = null;
@@ -263,6 +297,16 @@ public class Combate {
 		return pkmn;
 	}
 
+	/**
+	 * Función en la cual se aplica el movimiento si cumple con las condiciones
+	 * adecuadas
+	 * 
+	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
+	 *                   que está atacando
+	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
+	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
+	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
+	 */
 	private void aplicarMovimiento(ArrayList<Pokemon> equipo, Pokemon atacante, Move movimiento, Pokemon rival) {
 		if (atacante.getActualHp() > 0) {
 			if (movimiento.getActPP() > 0) {
@@ -298,14 +342,11 @@ public class Combate {
 					} else if (movimiento.getAplicaCondPosiPkmn() == CondPosiPkmn.Cargando) {
 						if (!atacante.hasCond(CondPosiPkmn.Cargando)) {
 							statusAttack(atacante, rival, movimiento);
+							System.out.println(atacante.getNombre() + " esta cargando el ataque");
+							movimiento.setTurnosCargados(movimiento.getTurnosCargados() + 1);
 						} else if (atacante.hasCond(CondPosiPkmn.Cargando)) {
-							if (movimiento.getTurnosCargados() < movimiento.getTurnosNecesarios()) {
-								System.out.println(atacante.getNombre() + " esta cargando el ataque");
-								movimiento.setTurnosCargados(movimiento.getTurnosCargados() + 1);
-							} else {
-								movimiento.setTurnosCargados(1);
-								doMove(equipo, atacante, movimiento, rival);
-							}
+							movimiento.setTurnosCargados(1);
+							doMove(equipo, atacante, movimiento, rival);
 						}
 					} else
 						doMove(equipo, atacante, movimiento, rival);
@@ -325,6 +366,15 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Función en la que se comprueba la precisión del movimiento y se realiza
+	 * 
+	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
+	 *                   que está atacando
+	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
+	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
+	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
+	 */
 	public void doMove(ArrayList<Pokemon> equipo, Pokemon atacante, Move movimiento, Pokemon rival) {
 		if (movimiento.getPrecision() > 0) {
 			if (((int) (Math.random() * 101)) < movimiento.getPrecision()) {
@@ -337,6 +387,16 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Funcion en el que se realizan todos los cambios necesarios con respecto al
+	 * ataque utilizado
+	 * 
+	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
+	 *                   que está atacando
+	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
+	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
+	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
+	 */
 	public void ataque(ArrayList<Pokemon> equipo, Pokemon atacante, Move movimiento, Pokemon rival) {
 		Move move = strangeMove(equipo, movimiento);
 		Move apoyo = (Move) movimiento.copiarMove();
@@ -366,6 +426,15 @@ public class Combate {
 
 	}
 
+	/**
+	 * Funcion en la que se calcula el daño del movimiento
+	 * 
+	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
+	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
+	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
+	 * 
+	 * @return Entero que representa cuanta vida quitamos al pokemon rival
+	 */
 	private int calcDamage(Pokemon atacante, Pokemon rival, Move movimiento) {
 		switch (movimiento.getMove()) {
 		case Endeavor:
@@ -451,6 +520,28 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Función que calcula cuanta salud vamos a quitar dependiendo del tipo de
+	 * movimiento
+	 * 
+	 * @param atacante    Objeto 'Pokemon' que representa al pokemon atacando
+	 * @param rival       Objetp 'Pokemon' que representa al pokemon al que se ataca
+	 * @param movimiento  Objeto 'Move' que representa el movimiento que se aplica
+	 * @param modTiempo   Doble que representa el modificiador con respecto al
+	 *                    tiempo que hace en la arena
+	 * @param crit        Entero que representa el modificiador de daño critico (en
+	 *                    pokemon como tal es distinto)
+	 * @param random      Doble que representa el modificiador aleatorio
+	 * @param stab        Doble que representa el modificiador de S.T.A.B.
+	 * @param efectividad Doble que representa el modificiador de la efectividad del
+	 *                    ataque
+	 * @param quemadura   Doble que representa el modificiador de si el pokemon está
+	 *                    quemado
+	 * @param otro        Doble que representa un modificador extra usado en raras
+	 *                    ocasiones
+	 * 
+	 * @return Entero que representa la salud que quitamos
+	 */
 	private int attackDamage(Pokemon atacante, Pokemon rival, Move movimiento, double modTiempo, int crit,
 			double random, double stab, double efectividad, double quemadura, double otro) {
 		if (movimiento.getClase() == Clase.Fisico) {
@@ -465,6 +556,13 @@ public class Combate {
 		return 0;
 	}
 
+	/**
+	 * Funcion que aplica el daño al pokemon rival
+	 * 
+	 * @param atacante Objeto 'Pokemon' que representa al atacante
+	 * @param rival    Objeto 'Pokemon' que representa al rival
+	 * @param damage   Entero que representa la salud que quitamos
+	 */
 	private void applyDamage(Pokemon atacante, Pokemon rival, int damage) {
 		if (atacante.getEstado() == Estado.Confusion) {
 			if (((int) (Math.random() * 101)) <= 33) {
@@ -477,6 +575,14 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Funcion que aplica todos los cambios de estado, así como el tiempo de la
+	 * arena
+	 * 
+	 * @param atacante   Objeto 'Pokemon' que representa al atacante
+	 * @param rival      Objeto 'Pokemon' que representa al rival
+	 * @param movimiento Objeto 'Move' que representa el movimiento utilizado
+	 */
 	private void applyStatChanges(Pokemon atacante, Pokemon rival, Move movimiento) {
 		this.condArena = movimiento.getAplicaCondArena();
 		this.contCondArena = 5;
@@ -494,6 +600,16 @@ public class Combate {
 //		rival.setSpeed(rival.getSpeed() * movimiento.getChnSpeRiv());
 	}
 
+	/**
+	 * Funcion que aplica efectos de estado de movimientos como 'Drenadoras',
+	 * 'Anillo acuatico', etc.
+	 * 
+	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
+	 *                   que está atacando
+	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
+	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
+	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
+	 */
 	private void applyCondPosiPkmnAfterCalc(ArrayList<Pokemon> equipo, Pokemon atacante, Move movimiento,
 			Pokemon rival) {
 		if (atacante.hasCond(CondPosiPkmn.Heal_1p16)) {
@@ -506,10 +622,26 @@ public class Combate {
 
 	}
 
+	/**
+	 * Funcion que aplica los efectos de antes de ejecutar el golpe, como
+	 * 'Proteccion'
+	 * 
+	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
+	 *                   que está atacando
+	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
+	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
+	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
+	 */
 //	private void applyCondPosiPkmnBeforeCalc(ArrayList<Pokemon> equipo, Pokemon atacante, Move movimiento,
 //			Pokemon rival) {
 //	}
 
+	/**
+	 * Funcion que calcula y aplica los efectos antes de ejecutar el golpe
+	 * dependiendo del tiempo de la arena
+	 * 
+	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
+	 */
 	private void condArenaBeforeCalc(Move movimiento) {
 		switch (this.condArena) {
 		// Falta, y mucho
@@ -520,6 +652,12 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Funcion que calcula y aplica los efectos despues de ejecutar el golpe
+	 * dependiendo del tiempo de la arena
+	 * 
+	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
+	 */
 	private void condArenaAfterCalc(ArrayList<Pokemon> combatientes) {
 		switch (this.condArena) {
 		case Soleado:
@@ -558,6 +696,12 @@ public class Combate {
 //	break;
 //	}
 
+	/**
+	 * Funcion que comprueba si el movimiento es cargado y si la condicion de la
+	 * arena es la correcta, para que el movimiento se ejecute en un solo turno
+	 * 
+	 * @param movimiento
+	 */
 	private void chargeMove(Move movimiento) {
 		switch (movimiento.getMove()) {
 		case Solar_Beam:
@@ -575,6 +719,13 @@ public class Combate {
 
 	}
 
+	/**
+	 * Funcion que aplica los estados específicos de cada movimiento
+	 * 
+	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
+	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
+	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
+	 */
 	private void statusAttack(Pokemon atacante, Pokemon rival, Move movimiento) {
 		int turnos;
 		if (rival.getTurnosEstado() == 0) {
@@ -680,6 +831,13 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Aplica el daño o condicion proviniente del estado que tiene aplicado el
+	 * pokemon
+	 * 
+	 * @param atacante Objeto 'Pokemon' que representa al pokemon atacando
+	 * @param rival    Objetp 'Pokemon' que representa al pokemon al que se ataca
+	 */
 	private void applyPkmnStatus(Pokemon atacante, Pokemon rival) {
 		switch (atacante.getEstado()) {
 		case Quemado:
@@ -692,6 +850,12 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Elimina el estado del pokemon si cumple las condiciones adecuadas
+	 * 
+	 * @param pokemon Objeto 'Pokemon' que representa el pokemon al que le
+	 *                comprobamos los estados
+	 */
 	private void removePkmnStatus(Pokemon pokemon) {
 		if (pokemon.getTurnosEstado() > 0) {
 			pokemon.setTurnosEstado(pokemon.getTurnosEstado() - 1);
@@ -738,6 +902,18 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Funcion que aplica los movimientos de estilo 'Metronomo', 'Ayuda', 'Paliza',
+	 * etc.
+	 * 
+	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
+	 *                   del pokemon que está atacado
+	 * @param movimiento Objeto 'Movimiento' que representa el movimiento que se
+	 *                   está usando
+	 * 
+	 * @return Objeto 'Move' que representa el movimiento que se ha escogido en la
+	 *         funcion
+	 */
 	private Move strangeMove(ArrayList<Pokemon> equipo, Move movimiento) {
 		switch (movimiento.getMove()) {
 		case Assist:
@@ -760,11 +936,27 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Obtiene el movimiento que se ha conseguido con strangeMove()
+	 * 
+	 * @param objetivo Objeto 'Move' que representa el movimiento del que vamos a
+	 *                 usar
+	 * 
+	 * @return Objeto 'Move'
+	 */
 	private Move changeMove(Move objetivo) {
 		System.out.println(objetivo.getNombre());
 		return (Move) objetivo.copiarMove();
 	}
 
+	/**
+	 * Funcion que aplica el daño de retroceso o curación del movimiento
+	 * 
+	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
+	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
+	 * @param damage     Entero que representa el daño que se ha realizado con el
+	 *                   ataque
+	 */
 	private void recoilMove(Pokemon atacante, Move movimiento, int damage) {
 		switch (movimiento.getMove()) {
 		/*
@@ -822,6 +1014,12 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Funcion que comprueba que todos los entrenadores tienen pokemons que pueden
+	 * combatir en su equipo y en la arena
+	 * 
+	 * @return Booleano
+	 */
 	private boolean isFinished() {
 		if (!this.entrenador1.puedeCombatir() || !this.entrenador2.puedeCombatir()) {
 			return true;
@@ -830,6 +1028,9 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Funcion que nos permite configurar los entrenadores del combate
+	 */
 	private void setEntrenadores() {
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
@@ -847,6 +1048,12 @@ public class Combate {
 		this.entrenador2.getEquipo().get(0).setPosicion(0);
 	}
 
+	/**
+	 * Funcion que nos permite configurar los pokemons del combate
+	 * 
+	 * @param entrenador Objeto 'Entrenador' que representa el entrenador que posee
+	 *                   los pokemons
+	 */
 	private void setPokemon(Entrenador entrenador) {
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
@@ -871,6 +1078,12 @@ public class Combate {
 		System.out.println();
 	}
 
+	/**
+	 * Funcion que asigna movimientos a los pokemon
+	 * 
+	 * @param pokemon Objeto 'Pokemon' que representa el pokemon al que le asignamos
+	 *                los movimientos
+	 */
 	private void setPkmnMoves(Pokemon pokemon) {
 		for (int i = 0; i < 4; i++) {
 			pokemon.aprenderMovimiento(utils.Almacen.almacenMovimientos
@@ -878,6 +1091,11 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Funcion que asigna una ID al pokemon en el combate
+	 * 
+	 * @param pokemons ArrayList<Pokemon> que representa a los pokemon en la arena
+	 */
 	private void setPkmnId(ArrayList<Pokemon> pokemons) {
 		int i;
 		for (i = 0; i < pokemons.size(); i++) {

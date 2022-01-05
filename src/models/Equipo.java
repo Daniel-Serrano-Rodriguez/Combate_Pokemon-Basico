@@ -22,6 +22,9 @@ public class Equipo {
 	}
 
 	// Methods
+	/**
+	 * Funcion que nos muestra el equipo
+	 */
 	public void mostrarEquipo() {
 		for (int i = 0; i < this.equipo.size(); i++) {
 			if (i % 2 == 0)
@@ -53,6 +56,12 @@ public class Equipo {
 		System.out.println();
 	}
 
+	/**
+	 * Funcion que nos permite introducir un pokemon en el equipo
+	 * 
+	 * @param pokemon Objeto 'Pokemon' que representa el pokemon que queremos
+	 *                introducir
+	 */
 	public void meterPokemon(Pokemon pokemon) {
 		if (this.equipo.size() == 6) {
 			@SuppressWarnings("resource")
