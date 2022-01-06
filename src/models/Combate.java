@@ -313,7 +313,10 @@ public class Combate {
 	/**
 	 * Funcion que nos permite cambiar nuestro pokemon por otro del equipo
 	 * 
-	 * @param equipo ArrayList<Pokemon> que representa el equipo del entrenador
+	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
+	 * @param atacantes  ArrayList<Pokemon> que representa los pokemons en la arena
+	 *                   del entrenador
+	 * @param posicicion ID del pokemon que vamos a cambiar
 	 */
 	private void choosePkmn(ArrayList<Pokemon> equipo, ArrayList<Pokemon> atacantes, int posicion) {
 		@SuppressWarnings("resource")
@@ -544,7 +547,7 @@ public class Combate {
 			if (atacante.getActualHp() == atacante.getMaxHP())
 				return 0;
 			else
-				return (int)(rival.getMaxHP() - atacante.getActualHp());
+				return (int) (rival.getMaxHP() - atacante.getActualHp());
 
 		case Super_Fang:
 			return (int) (rival.getActualHp() / 2);
