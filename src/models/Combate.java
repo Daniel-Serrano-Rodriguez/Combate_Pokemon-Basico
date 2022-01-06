@@ -15,9 +15,6 @@ import utils.Pokemons;
 public class Combate {
 	private Entrenador entrenador1, entrenador2;
 	private ArrayList<Pokemon> pokemon1, pokemon2, combatientes;
-	// TODO si el pokemon es ditto, y usa el movimiento de copiar, se le reduce en 1
-	// al contandor del movimiento, se crea una copia en ditto[], y se actualiza el
-	// pokemon con los datos del pokemon objetivo
 	private Pokemon[] ditto;
 	private Pokemon[] change;
 	private Move[] moves;
@@ -171,8 +168,8 @@ public class Combate {
 						}
 				}
 
-				for(Pokemon poke : this.combatientes) {
-					if(this.moves[poke.getIdPelea()]!=null) {
+				for (Pokemon poke : this.combatientes) {
+					if (this.moves[poke.getIdPelea()] != null) {
 						priori.add(poke);
 					}
 				}
@@ -314,7 +311,7 @@ public class Combate {
 	}
 
 	/**
-	 * TODO Funcion que nos permite cambiar nuestro pokemon por otro del equipo
+	 * Funcion que nos permite cambiar nuestro pokemon por otro del equipo
 	 * 
 	 * @param equipo ArrayList<Pokemon> que representa el equipo del entrenador
 	 */
@@ -544,7 +541,10 @@ public class Combate {
 	private int calcDamage(Pokemon atacante, Pokemon rival, Move movimiento) {
 		switch (movimiento.getMove()) {
 		case Endeavor:
-			return rival.getActualHp() - (rival.getActualHp() - atacante.getActualHp());
+			if (atacante.getActualHp() == atacante.getMaxHP())
+				return 0;
+			else
+				return (int)(rival.getMaxHP() - atacante.getActualHp());
 
 		case Super_Fang:
 			return (int) (rival.getActualHp() / 2);

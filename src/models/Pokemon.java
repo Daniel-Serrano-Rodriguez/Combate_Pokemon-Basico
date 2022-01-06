@@ -417,14 +417,21 @@ public class Pokemon implements Cloneable {
 	public void dittoCopia(Pokemon rival) {
 		this.tipo1 = rival.tipo1;
 		this.tipo2 = rival.tipo2;
-		this.movimientos = (ArrayList<Move>) rival.movimientos.clone();
-		for (Move movimiento : this.movimientos) {
-			if (movimiento.getMaxPP() > 5)
-				movimiento.setMaxPP(5);
+		this.movimientos.clear();
 
-			if (movimiento.getActPP() > 5)
-				movimiento.setActPP(5);
+		ArrayList<Move> copiarDeAqui = (ArrayList<Move>) rival.movimientos.clone();
+
+		for (Move moves : copiarDeAqui) {
+			this.movimientos.add(moves.copiarMove());
 		}
+
+		for (Move moves : this.movimientos) {
+			if (moves.getMaxPP() > 5)
+				moves.setMaxPP(5);
+			if (moves.getActPP() > 5)
+				moves.setActPP(5);
+		}
+
 		this.attack = rival.attack;
 		this.defence = rival.defence;
 		this.spAttack = rival.spAttack;
