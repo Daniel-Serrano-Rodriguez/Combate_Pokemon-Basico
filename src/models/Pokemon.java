@@ -6,17 +6,19 @@ import java.util.Scanner;
 import models.TipoPokemon.Tipo;
 import utils.CondPosiPkmn;
 import utils.Estado;
+import utils.Pokemons;
 
 public class Pokemon implements Cloneable {
 	private Tipo tipo1, tipo2;
 	private Estado estado;
+	private Pokemons pokemon;
 	private ArrayList<Move> movimientos;
 	private ArrayList<CondPosiPkmn> pkmnCond;
 	private ArrayList<Integer> durPkmnCond;
 	private Entrenador entrenador;
 	private String nombre;
-	private int maxHP, actualHp, numero, level,attack, defence, spAttack, spDefence, speed, idPelea, turnosEstado, cntChngAtk, cntChngSpAtk, cntChngDef,
-			cntChngSpDef, cntChngSpe;
+	private int maxHP, actualHp, numero, level, attack, defence, spAttack, spDefence, speed, idPelea, turnosEstado,
+			cntChngAtk, cntChngSpAtk, cntChngDef, cntChngSpDef, cntChngSpe;
 	/**
 	 * posicion indica la posicón que ocupa el pokemon en el combate, 0 para 1vs1,
 	 * 0-1 para 2vs2 y de 0 a 2 para 3vs3
@@ -45,12 +47,13 @@ public class Pokemon implements Cloneable {
 	 * @param spDefence Entero que representa la defense especila del Pokemon
 	 * @param speed     Entero que representa la velocidad del pokemon
 	 */
-	public Pokemon(Tipo tipo1, Tipo tipo2, Estado estado, String nombre, int numero, int level, int maxHP,
-			int attack, int defence, int spAttack, int spDefence, int speed) {
+	public Pokemon(Tipo tipo1, Tipo tipo2, Estado estado, Pokemons pokemon, String nombre, int numero, int level,
+			int maxHP, int attack, int defence, int spAttack, int spDefence, int speed) {
 		super();
 		this.tipo1 = tipo1;
 		this.tipo2 = tipo2;
 		this.estado = estado;
+		this.pokemon = pokemon;
 		this.movimientos = new ArrayList<Move>();
 		this.pkmnCond = new ArrayList<CondPosiPkmn>();
 		this.durPkmnCond = new ArrayList<Integer>();
@@ -100,6 +103,10 @@ public class Pokemon implements Cloneable {
 		this.estado = estado;
 	}
 
+	public Pokemons getPokemon() {
+		return pokemon;
+	}
+
 	public ArrayList<Move> getMovimientos() {
 		return movimientos;
 	}
@@ -107,11 +114,11 @@ public class Pokemon implements Cloneable {
 	protected ArrayList<CondPosiPkmn> getPkmnCond() {
 		return pkmnCond;
 	}
-	
+
 	protected void clearPkmnCond() {
 		this.pkmnCond = new ArrayList<CondPosiPkmn>();
 	}
-	
+
 	protected void addPkmnCond(CondPosiPkmn pkmnCond) {
 		this.pkmnCond.add(pkmnCond);
 		this.durPkmnCond.add(-1);
@@ -142,7 +149,7 @@ public class Pokemon implements Cloneable {
 	protected ArrayList<Integer> getDurPkmnCond() {
 		return durPkmnCond;
 	}
-	
+
 	protected void clearDurPkmnCond() {
 		this.durPkmnCond = new ArrayList<Integer>();
 	}
@@ -400,6 +407,68 @@ public class Pokemon implements Cloneable {
 		}
 	}
 
+	// Nos permiten usar a Ditto
+	/**
+	 * Copia las estadísticas del rival que tiene enfrente
+	 * 
+	 * @param rival Objeto 'Pokemon' del que estamos copiando los datos
+	 */
+	@SuppressWarnings("unchecked")
+	public void dittoCopia(Pokemon rival) {
+		this.tipo1 = rival.tipo1;
+		this.tipo2 = rival.tipo2;
+		this.movimientos = (ArrayList<Move>) rival.movimientos.clone();
+		for (Move movimiento : this.movimientos) {
+			if (movimiento.getMaxPP() > 5)
+				movimiento.setMaxPP(5);
+
+			if (movimiento.getActPP() > 5)
+				movimiento.setActPP(5);
+		}
+		this.attack = rival.attack;
+		this.defence = rival.defence;
+		this.spAttack = rival.spAttack;
+		this.spDefence = rival.spDefence;
+		this.speed = rival.speed;
+	}
+
+	/**
+	 * Nos permite guardar los datos que cambian de Ditto
+	 * 
+	 * @return Objeto 'Pokemon' que solo tiene los datos que se copian
+	 */
+	@SuppressWarnings("unchecked")
+	public Pokemon dittoGuardar() {
+		Pokemon poke = new Pokemon();
+		poke.tipo1 = this.tipo1;
+		poke.tipo2 = this.tipo2;
+		poke.movimientos = (ArrayList<Move>) this.movimientos.clone();
+		poke.attack = this.attack;
+		poke.defence = this.defence;
+		poke.spAttack = this.spAttack;
+		poke.spDefence = this.spDefence;
+		poke.speed = this.speed;
+
+		return poke;
+	}
+
+	/**
+	 * Nos permite recuperar los datos de Ditto guardados
+	 * 
+	 * @param recuperar Objeto 'Pokemon'
+	 */
+	@SuppressWarnings("unchecked")
+	public void dittoRecuperar(Pokemon recuperar) {
+		this.tipo1 = recuperar.tipo1;
+		this.tipo2 = recuperar.tipo2;
+		this.movimientos = (ArrayList<Move>) recuperar.movimientos.clone();
+		this.attack = recuperar.attack;
+		this.defence = recuperar.defence;
+		this.spAttack = recuperar.spAttack;
+		this.spDefence = recuperar.spDefence;
+		this.speed = recuperar.speed;
+	}
+
 	/**
 	 * Nos permite copiar el pokemon
 	 * 
@@ -411,6 +480,7 @@ public class Pokemon implements Cloneable {
 		poke.tipo1 = this.tipo1;
 		poke.tipo2 = this.tipo2;
 		poke.estado = this.estado;
+		poke.pokemon = this.pokemon;
 		poke.movimientos = (ArrayList<Move>) this.movimientos.clone();
 		poke.pkmnCond = (ArrayList<CondPosiPkmn>) this.pkmnCond.clone();
 		poke.durPkmnCond = (ArrayList<Integer>) this.durPkmnCond.clone();

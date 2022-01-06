@@ -10,6 +10,7 @@ import utils.CondArena;
 import utils.CondPosiPkmn;
 import utils.Estado;
 import utils.Moves;
+import utils.Pokemons;
 
 public class Combate {
 	private Entrenador entrenador1, entrenador2;
@@ -170,12 +171,10 @@ public class Combate {
 						}
 				}
 
-				for (int i = 0; i < this.moves.length; i++) {
-					if (this.moves[i] != null)
-						if (this.moves[i].getPrioridad() == prioridad) {
-							if (i < this.combatientes.size())
-								priori.add(this.combatientes.get(i));
-						}
+				for(Pokemon poke : this.combatientes) {
+					if(this.moves[poke.getIdPelea()]!=null) {
+						priori.add(poke);
+					}
 				}
 
 				atacante = quienEmpiezaTurno(priori);
@@ -222,6 +221,7 @@ public class Combate {
 					}
 				}
 				combatientes.remove(atacante);
+				priori.clear();
 			}
 		}
 
@@ -444,9 +444,21 @@ public class Combate {
 			} else {
 				if (movimiento.getMove() == Moves.Change) {
 					pkmnArena.add(this.change[atacante.getIdPelea()]);
+
+					if (atacante.getPokemon() == Pokemons.Ditto) {
+						atacante.dittoRecuperar(this.ditto[atacante.getIdPelea()]);
+						this.change[atacante.getIdPelea()] = null;
+					}
+					if (this.change[atacante.getIdPelea()] != null)
+						if (this.change[atacante.getIdPelea()].getPokemon() == Pokemons.Ditto) {
+							this.ditto[atacante.getIdPelea()] = this.change[atacante.getIdPelea()].dittoGuardar();
+							this.change[atacante.getIdPelea()].dittoCopia(atacante);
+						}
+
 					this.moves[atacante.getIdPelea()] = null;
 					atacante.setIdPelea(-1);
 					atacante.setPosicion(-1);
+
 					pkmnArena.remove(atacante);
 				} else {
 					int damage = calcDamage(atacante, rival, utils.Almacen.almacenMovimientos.get(0));
@@ -1140,6 +1152,16 @@ public class Combate {
 		setPokemon(entrenador2);
 		this.pokemon2.add(this.entrenador2.getEquipo().get(0));
 		this.entrenador2.getEquipo().get(0).setPosicion(0);
+
+		if (this.pokemon1.get(0).getPokemon() == Pokemons.Ditto) {
+			this.ditto[0] = this.pokemon1.get(0).dittoGuardar();
+			this.pokemon1.get(0).dittoCopia(this.pokemon2.get(0));
+		}
+
+		if (this.pokemon2.get(0).getPokemon() == Pokemons.Ditto) {
+			this.ditto[1] = this.pokemon2.get(0).dittoGuardar();
+			this.pokemon2.get(0).dittoCopia(this.pokemon1.get(0));
+		}
 	}
 
 	/**
