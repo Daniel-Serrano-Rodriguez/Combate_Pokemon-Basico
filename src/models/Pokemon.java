@@ -3,10 +3,10 @@ package models;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import models.TipoPokemon.Tipo;
 import utils.CondPosiPkmn;
 import utils.Estado;
 import utils.Pokemons;
+import utils.Tipo;
 
 public class Pokemon implements Cloneable {
 	private Tipo tipo1, tipo2;
@@ -20,7 +20,7 @@ public class Pokemon implements Cloneable {
 	private int maxHP, actualHp, numero, level, attack, defence, spAttack, spDefence, speed, idPelea, turnosEstado,
 			cntChngAtk, cntChngSpAtk, cntChngDef, cntChngSpDef, cntChngSpe;
 	/**
-	 * posicion indica la posicón que ocupa el pokemon en el combate, 0 para 1vs1,
+	 * posicion indica la posicon que ocupa el pokemon en el combate, 0 para 1vs1,
 	 * 0-1 para 2vs2 y de 0 a 2 para 3vs3
 	 * 
 	 * ataca indica la posicion del atacante
@@ -409,7 +409,7 @@ public class Pokemon implements Cloneable {
 
 	// Nos permiten usar a Ditto
 	/**
-	 * Copia las estadísticas del rival que tiene enfrente
+	 * Copia las estadisticas del rival que tiene enfrente
 	 * 
 	 * @param rival Objeto 'Pokemon' del que estamos copiando los datos
 	 */

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import models.Move;
 import models.Pokemon;
-import models.TipoPokemon.Tipo;
 
 public class Almacen {
 	public static ArrayList<Pokemon> almacenPokemon = new ArrayList<Pokemon>();

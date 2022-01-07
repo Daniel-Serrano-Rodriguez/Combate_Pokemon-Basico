@@ -5,12 +5,12 @@ import java.util.ListIterator;
 import java.util.Scanner;
 
 import models.Move.Clase;
-import models.TipoPokemon.Tipo;
 import utils.CondArena;
 import utils.CondPosiPkmn;
 import utils.Estado;
 import utils.Moves;
 import utils.Pokemons;
+import utils.Tipo;
 
 public class Combate {
 	private Entrenador entrenador1, entrenador2;
@@ -148,10 +148,10 @@ public class Combate {
 
 			setPkmnId(this.combatientes);
 
-			System.out.println("\n\nTurno de " + this.entrenador1.getNombre() + "\n¿Qué quieres hacer?\n");
+			System.out.println("\n\nTurno de " + this.entrenador1.getNombre() + "\nQue quieres hacer?\n");
 			choiceBlock(this.entrenador1, this.pokemon1, this.pokemon2);
 
-			System.out.println("\n\nTurno de " + this.entrenador2.getNombre());
+			System.out.println("\n\nTurno de " + this.entrenador2.getNombre() + "\nQue quieres hacer?\n");
 			choiceBlock(this.entrenador2, this.pokemon2, this.pokemon1);
 
 			ListIterator<Pokemon> combate = this.combatientes.listIterator();
@@ -178,7 +178,7 @@ public class Combate {
 
 				if (atacante.getEntrenador() == this.entrenador1) {
 					if (atacante.hasCond(CondPosiPkmn.Cargando)) {
-						System.out.println(atacante.getNombre() + " está cargando "
+						System.out.println(atacante.getNombre() + " esta cargando "
 								+ this.moves[atacante.getIdPelea()].getNombre());
 						aplicarMovimiento(this.entrenador1.getEquipo(), null, atacante,
 								this.moves[atacante.getIdPelea()], this.pokemon2.get(atacante.getAtaca()));
@@ -198,7 +198,7 @@ public class Combate {
 					}
 				} else {
 					if (atacante.hasCond(CondPosiPkmn.Cargando)) {
-						System.out.println(atacante.getNombre() + " está cargando "
+						System.out.println(atacante.getNombre() + " esta cargando "
 								+ this.moves[atacante.getIdPelea()].getNombre());
 						aplicarMovimiento(this.entrenador2.getEquipo(), null, atacante,
 								this.moves[atacante.getIdPelea()], this.pokemon1.get(atacante.getAtaca()));
@@ -235,9 +235,9 @@ public class Combate {
 	 * 
 	 * @param entrenador Objeto 'Entrenador' que representa el entrenador
 	 * @param atacantes  ArrayList<Pokemon> que representa los pokemon del
-	 *                   entrenador que están combatiendo
+	 *                   entrenador que estan combatiendo
 	 * @param rivales    ArrayList<Pokemon> que representa los pokemon del
-	 *                   entrenador rival que están combatiendo
+	 *                   entrenador rival que estan combatiendo
 	 */
 	private void choiceBlock(Entrenador entrenador, ArrayList<Pokemon> atacantes, ArrayList<Pokemon> rivales) {
 		@SuppressWarnings("resource")
@@ -294,7 +294,7 @@ public class Combate {
 	/**
 	 * Funcion que permite seleccionar el ataque de cada pokemon
 	 * 
-	 * @param atacantes ArrayList<Pokemon> de los pokemon de los que se están
+	 * @param atacantes ArrayList<Pokemon> de los pokemon de los que se estan
 	 *                  seleccionando los movimientos
 	 * @param rivales   ArrayList<Pokemon> de los pokemon rivales en la arena para
 	 *                  seleccionar a quien atacar
@@ -306,7 +306,7 @@ public class Combate {
 			if (this.combatientes.size() == 2) {
 				pkmn.setAtaca(0);
 			}
-			// WIP expansión para combates 2vs2, 3vs3
+			// WIP expansion para combates 2vs2, 3vs3
 		}
 	}
 
@@ -327,13 +327,19 @@ public class Combate {
 		do {
 			while (notNum) {
 				try {
-					System.out.println("\n¿A quien quieres sacar?\n");
+					System.out.println("\nA quien quieres sacar?\n");
 					for (int i = 0; i < equipo.size(); i++) {
 						if (i % 2 == 0)
 							System.out.println();
 
 						if (equipo.get(i).getIdPelea() == posicion)
-							System.out.print((i + 1) + "." + equipo.get(i).getNombre() + " (En uso)  \t");
+							if (equipo.get(i).getActualHp() <= 0)
+								System.out.print(
+										(i + 1) + "." + equipo.get(i).getNombre() + " (En uso) No puede combatir  \t");
+							else
+								System.out.print((i + 1) + "." + equipo.get(i).getNombre() + " (En uso)  \t");
+						else if (equipo.get(i).getActualHp() <= 0)
+							System.out.print((i + 1) + "." + equipo.get(i).getNombre() + "No puede combatir  \t");
 						else
 							System.out.print((i + 1) + "." + equipo.get(i).getNombre() + "           \t");
 					}
@@ -344,6 +350,9 @@ public class Combate {
 					if (opc < 1 && opc > equipo.size()) {
 						choice = false;
 						System.out.println("\n\nElige un numero correcto\n");
+					} else if (equipo.get(opc).getActualHp() <= 0) {
+						choice = false;
+						System.out.print(equipo.get(opc).getNombre() + " no puede combatir  \t");
 					} else {
 						choice = true;
 						notNum = false;
@@ -365,7 +374,7 @@ public class Combate {
 	}
 
 	/**
-	 * Devuelve el pokemon más rápido del grupo
+	 * Devuelve el pokemon mas rapido del grupo
 	 * 
 	 * @param pokemons ArrayList<Pokemon> de los atacantes con la misma velocidad
 	 * @return Objeto 'Pokemon' con mayor velocidad
@@ -383,11 +392,11 @@ public class Combate {
 	}
 
 	/**
-	 * Función en la cual se aplica el movimiento si cumple con las condiciones
+	 * Funcion en la cual se aplica el movimiento si cumple con las condiciones
 	 * adecuadas
 	 * 
 	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
-	 *                   que está atacando
+	 *                   que esta atacando
 	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
 	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
 	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
@@ -402,7 +411,7 @@ public class Combate {
 					if ((int) (Math.random() * 101) > 25) {
 						doMove(equipo, atacante, movimiento, rival);
 					} else {
-						System.out.println(atacante.getNombre() + " está paralizado");
+						System.out.println(atacante.getNombre() + " esta paralizado");
 					}
 					break;
 				}
@@ -473,10 +482,10 @@ public class Combate {
 	}
 
 	/**
-	 * Función en la que se comprueba la precisión del movimiento y se realiza
+	 * Funcion en la que se comprueba la precision del movimiento y se realiza
 	 * 
 	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
-	 *                   que está atacando
+	 *                   que esta atacando
 	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
 	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
 	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
@@ -498,7 +507,7 @@ public class Combate {
 	 * ataque utilizado
 	 * 
 	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
-	 *                   que está atacando
+	 *                   que esta atacando
 	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
 	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
 	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
@@ -533,7 +542,7 @@ public class Combate {
 	}
 
 	/**
-	 * Funcion en la que se calcula el daño del movimiento
+	 * Funcion en la que se calcula el damage del movimiento
 	 * 
 	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
 	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
@@ -630,7 +639,7 @@ public class Combate {
 	}
 
 	/**
-	 * Función que calcula cuanta salud vamos a quitar dependiendo del tipo de
+	 * Funcion que calcula cuanta salud vamos a quitar dependiendo del tipo de
 	 * movimiento
 	 * 
 	 * @param atacante    Objeto 'Pokemon' que representa al pokemon atacando
@@ -638,14 +647,14 @@ public class Combate {
 	 * @param movimiento  Objeto 'Move' que representa el movimiento que se aplica
 	 * @param modTiempo   Doble que representa el modificiador con respecto al
 	 *                    tiempo que hace en la arena
-	 * @param crit        Entero que representa el modificiador de daño critico (en
+	 * @param crit        Entero que representa el modificiador de damage critico (en
 	 *                    pokemon como tal es distinto)
 	 * @param random      Doble que representa el modificiador aleatorio
 	 * @param stab        Doble que representa el modificiador de S.T.A.B.
 	 * @param efectividad Doble que representa el modificiador de la efectividad del
 	 *                    ataque
-	 * @param quemadura   Doble que representa el modificiador de si el pokemon está
-	 *                    quemado
+	 * @param quemadura   Doble que representa el modificiador de si el pokemon
+	 *                    esta quemado
 	 * @param otro        Doble que representa un modificador extra usado en raras
 	 *                    ocasiones
 	 * 
@@ -666,7 +675,7 @@ public class Combate {
 	}
 
 	/**
-	 * Funcion que aplica el daño al pokemon rival
+	 * Funcion que aplica el damage al pokemon rival
 	 * 
 	 * @param atacante Objeto 'Pokemon' que representa al atacante
 	 * @param rival    Objeto 'Pokemon' que representa al rival
@@ -685,7 +694,7 @@ public class Combate {
 	}
 
 	/**
-	 * Funcion que aplica todos los cambios de estado, así como el tiempo de la
+	 * Funcion que aplica todos los cambios de estado, asi como el tiempo de la
 	 * arena
 	 * 
 	 * @param atacante   Objeto 'Pokemon' que representa al atacante
@@ -714,7 +723,7 @@ public class Combate {
 	 * 'Anillo acuatico', etc.
 	 * 
 	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
-	 *                   que está atacando
+	 *                   que esta atacando
 	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
 	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
 	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
@@ -736,7 +745,7 @@ public class Combate {
 	 * 'Proteccion'
 	 * 
 	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
-	 *                   que está atacando
+	 *                   que esta atacando
 	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
 	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
 	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
@@ -829,7 +838,7 @@ public class Combate {
 	}
 
 	/**
-	 * Funcion que aplica los estados específicos de cada movimiento
+	 * Funcion que aplica los estados especificos de cada movimiento
 	 * 
 	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
 	 * @param rival      Objetp 'Pokemon' que representa al pokemon al que se ataca
@@ -941,7 +950,7 @@ public class Combate {
 	}
 
 	/**
-	 * Aplica el daño o condicion proviniente del estado que tiene aplicado el
+	 * Aplica el damage o condicion proviniente del estado que tiene aplicado el
 	 * pokemon
 	 * 
 	 * @param atacante Objeto 'Pokemon' que representa al pokemon atacando
@@ -987,7 +996,7 @@ public class Combate {
 			if ((int) (Math.random() * 101) <= 15) {
 				pokemon.setEstado(Estado.Ninguno);
 				pokemon.setTurnosEstado(0);
-				System.out.println(pokemon.getNombre() + " ya no está paralizado");
+				System.out.println(pokemon.getNombre() + " ya no esta paralizado");
 			}
 			break;
 
@@ -1003,7 +1012,7 @@ public class Combate {
 			if ((int) (Math.random() * 101) <= 20) {
 				pokemon.setEstado(Estado.Ninguno);
 				pokemon.setTurnosEstado(0);
-				System.out.println(pokemon.getNombre() + " ya no está congelado");
+				System.out.println(pokemon.getNombre() + " ya no esta congelado");
 			}
 			break;
 
@@ -1016,9 +1025,9 @@ public class Combate {
 	 * etc.
 	 * 
 	 * @param equipo     ArrayList<Pokemon> que representa el equipo del entrenador
-	 *                   del pokemon que está atacado
+	 *                   del pokemon que esta atacado
 	 * @param movimiento Objeto 'Movimiento' que representa el movimiento que se
-	 *                   está usando
+	 *                   esta usando
 	 * 
 	 * @return Objeto 'Move' que representa el movimiento que se ha escogido en la
 	 *         funcion
@@ -1059,11 +1068,11 @@ public class Combate {
 	}
 
 	/**
-	 * Funcion que aplica el daño de retroceso o curación del movimiento
+	 * Funcion que aplica el damage de retroceso o curacion del movimiento
 	 * 
 	 * @param atacante   Objeto 'Pokemon' que representa al pokemon atacando
 	 * @param movimiento Objeto 'Move' que representa el movimiento que se aplica
-	 * @param damage     Entero que representa el daño que se ha realizado con el
+	 * @param damage     Entero que representa el damage que se ha realizado con el
 	 *                   ataque
 	 */
 	private void recoilMove(Pokemon atacante, Move movimiento, int damage) {
@@ -1071,7 +1080,7 @@ public class Combate {
 		/*
 		 * DAÑO
 		 */
-		// 1/4 del daño realizado
+		// 1/4 del damage realizado
 		case Double_Edge:
 		case Head_Charge:
 		case Submission:
@@ -1080,7 +1089,7 @@ public class Combate {
 			atacante.setActualHp(atacante.getActualHp() - ((int) (damage / 4)));
 			break;
 
-		// 1/3 del daño realizado
+		// 1/3 del damage realizado
 		case Brave_Bird:
 		case Flare_Blitz:
 		case Volt_Tackle:
@@ -1088,7 +1097,7 @@ public class Combate {
 			atacante.setActualHp(atacante.getActualHp() - ((int) (damage / 3)));
 			break;
 
-		// 1/2 del daño realizado
+		// 1/2 del damage realizado
 		case Head_Smash:
 		case Light_Ruin:
 			atacante.setActualHp(atacante.getActualHp() - ((int) (damage / 2)));
@@ -1107,7 +1116,7 @@ public class Combate {
 		/*
 		 * CURAR
 		 */
-		// 1/2 del daño realizado
+		// 1/2 del damage realizado
 		case Horn_Leech:
 			if (atacante.getActualHp() + ((int) (damage / 2)) > atacante.getMaxHP()) {
 				System.out.println(

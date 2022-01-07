@@ -3,14 +3,14 @@ package models;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import models.TipoPokemon.Tipo;
 import utils.Estado;
+import utils.Tipo;
 
 public class Equipo {
 	private ArrayList<Pokemon> equipo;
 
 	/**
-	 * Constructor del objeto 'Equipo'. Se crea vacío
+	 * Constructor del objeto 'Equipo'. Se crea vacio
 	 */
 	public Equipo() {
 		this.equipo = new ArrayList<Pokemon>();
@@ -70,7 +70,7 @@ public class Equipo {
 			boolean elegido;
 
 			if (this.equipo.size() == 6) {
-				System.out.println("Equipo completo. ¿Cual deseas quitar?");
+				System.out.println("Equipo completo. Cual deseas quitar?");
 
 				do {
 					mostrarEquipo();
@@ -81,7 +81,7 @@ public class Equipo {
 						elegido = false;
 						System.out.println("\n\nElige un numero valido\n");
 					} else {
-						System.out.println("\n\n¿Quitar " + this.equipo.get(poke).getNombre() + "?");
+						System.out.println("\n\nQuitar " + this.equipo.get(poke).getNombre() + "?");
 						System.out.println("\n1.Si\n2.No\n");
 						System.out.print("->: ");
 						opc = Integer.parseInt(sc.nextLine());
