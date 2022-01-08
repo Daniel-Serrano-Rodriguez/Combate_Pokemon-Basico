@@ -75,17 +75,17 @@ public class MainApp {
 
 		// NORMAL
 		utils.Almacen.almacenMovimientos.add(new Move(Estado.Dormido, CondPosiPkmn.Ninguno, Tipo.Normal, Clase.Especial,
-				Moves.Relic_Song, "Canción reliquia?", "Cantas o algo", 10, 75, 100, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
+				Moves.Relic_Song, "Cancion reliquia?", "Cantas o algo", 10, 75, 100, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
 		utils.Almacen.almacenMovimientos
 				.add(new Move(Estado.Retroceder, CondPosiPkmn.Ninguno, Tipo.Normal, Clase.Especial, Moves.Snore,
-						"Roncar", "En serio cabrón?", 15, 50, 100, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
+						"Roncar", "En serio cabron?", 15, 50, 100, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
 		utils.Almacen.almacenMovimientos.add(new Move(Estado.Ninguno, CondPosiPkmn.Ninguno, Tipo.Normal, Clase.Fisico,
-				Moves.Scratch, "Arañazo", "Le arañas", 35, 40, 100, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
+				Moves.Scratch, "Aranyazo", "Le aranyas", 35, 40, 100, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
 		utils.Almacen.almacenMovimientos
 				.add(new Move(Estado.Ninguno, CondPosiPkmn.Ninguno, Tipo.Normal, Clase.Fisico, Moves.Endeavor,
 						"Vengador", "Igualas la vida del rival a la tuya", 5, 0, 100, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
 		utils.Almacen.almacenMovimientos.add(new Move(Estado.Ninguno, CondPosiPkmn.Ninguno, Tipo.Normal, Clase.Estado,
-				Moves.Metronome, "Metrónomo", "Tic tac hijoputa", 10, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
+				Moves.Metronome, "Metronomo", "Tic tac hijoputa", 10, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
 		utils.Almacen.almacenMovimientos
 				.add(new Move(Estado.Ninguno, CondPosiPkmn.Ninguno, Tipo.Normal, Clase.Fisico, Moves.Super_Fang,
 						"Super Colmillo", "El colmillo de Super-Man", 10, 0, 100, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
@@ -126,7 +126,7 @@ public class MainApp {
 				Moves.Flamethrower, "Lanzallamas", "Arma que supongo que estará prohibida en la guerra", 15, 90, 100,
 				0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
 		utils.Almacen.almacenMovimientos.add(new Move(Estado.Quemado, CondPosiPkmn.Ninguno, Tipo.Fuego, Clase.Especial,
-				Moves.Fire_Fang, "Colmillo fuego", "Como se queda la boca después de comer Jalapeños", 15, 65, 95, 0,
+				Moves.Fire_Fang, "Colmillo fuego", "Como se queda la boca después de comer Jalapenyos", 15, 65, 95, 0,
 				1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
 		utils.Almacen.almacenMovimientos.add(new Move(Estado.Quemado, CondPosiPkmn.Ninguno, Tipo.Fuego, Clase.Fisico,
 				Moves.Blaze_Kick, "Patada fuego", "Te quemas el chandal y le golpeas con el", 10, 85, 90, 0, 1, 1, 1, 1,
@@ -141,7 +141,7 @@ public class MainApp {
 		utils.Almacen.almacenMovimientos.add(new Move(Estado.Ninguno, CondPosiPkmn.Atrapado, Tipo.Agua, Clase.Fisico,
 				Moves.Clamp, "Pinza", "La del cangrejo", 15, 35, 85, 0, 4, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
 		utils.Almacen.almacenMovimientos.add(new Move(Estado.Recarga, CondPosiPkmn.Ninguno, Tipo.Agua, Clase.Especial,
-				Moves.Hydro_Canon, "Hidro cañon", "Mangera a presión", 5, 150, 90, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
+				Moves.Hydro_Canon, "Hidro canyon", "Mangera a presion", 5, 150, 90, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
 		utils.Almacen.almacenMovimientos
 				.add(new Move(Estado.Ninguno, CondArena.Ninguno, CondPosiPkmn.Heal_1p16, Tipo.Agua, Clase.Estado,
 						Moves.Aqua_Ring, "anillo agua", "anillo", 20, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
