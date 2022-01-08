@@ -51,7 +51,6 @@ public class MainApp {
 					default:
 						System.out.println("\n\nIntroduce una opción correcta\n");
 						choice = false;
-
 					}
 
 				} catch (NumberFormatException e) {

@@ -339,7 +339,7 @@ public class Combate {
 							else
 								System.out.print((i + 1) + "." + equipo.get(i).getNombre() + " (En uso)  \t");
 						else if (equipo.get(i).getActualHp() <= 0)
-							System.out.print((i + 1) + "." + equipo.get(i).getNombre() + "No puede combatir  \t");
+							System.out.print((i + 1) + "." + equipo.get(i).getNombre() + " No puede combatir  \t");
 						else
 							System.out.print((i + 1) + "." + equipo.get(i).getNombre() + "           \t");
 					}
@@ -350,7 +350,7 @@ public class Combate {
 					if (opc < 1 && opc > equipo.size()) {
 						choice = false;
 						System.out.println("\n\nElige un numero correcto\n");
-					} else if (equipo.get(opc).getActualHp() <= 0) {
+					} else if (equipo.get(opc-1).getActualHp() <= 0) {
 						choice = false;
 						System.out.print(equipo.get(opc).getNombre() + " no puede combatir  \t");
 					} else {
