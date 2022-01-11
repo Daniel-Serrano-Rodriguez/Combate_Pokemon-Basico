@@ -620,7 +620,7 @@ public class Combate {
 				efectividad = movimiento.getEfectividad(movimiento.getTipo(), rival.getTipo1());
 
 				if (rival.getTipo2() != Tipo.Ninguno) {
-					efectividad += movimiento.getEfectividad(movimiento.getTipo(), rival.getTipo2());
+					efectividad *= movimiento.getEfectividad(movimiento.getTipo(), rival.getTipo2());
 				}
 
 				if (atacante.getEstado() == Estado.Quemado && movimiento.getClase() == Clase.Fisico) {
